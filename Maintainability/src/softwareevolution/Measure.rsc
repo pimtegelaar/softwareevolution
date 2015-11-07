@@ -6,6 +6,19 @@ import List;
 import String;
 import IO;
 
+
+public M3 getExampleProject() {
+	return createM3FromEclipseProject(|project://example-project|);
+}
+
+public M3 getHyperSonicDB() {
+	return createM3FromEclipseProject(|project://hsqldb-2.3.1|);
+}
+
+public M3 getSmallDB() {
+	return createM3FromEclipseProject(|project://smallsql0.21_src|);
+}
+
 public int countMethods(M3 model, loc class) {
   list[loc] methods = [ e | e <- model@containment[class], e.scheme == "java+method"];
   int methodCount = size(methods);
