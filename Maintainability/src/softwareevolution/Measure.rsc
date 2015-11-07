@@ -33,10 +33,9 @@ public int countLines(str sourcecode) {
 public int countLOC(str sourcecode) {    
   int lineCounter = 0;
   for (n <- split("\r\n", sourcecode)) {
-    if ( /^\t\/\/|^\/\/|^\/\*|^\s\*/ !:= n && /\w/ := n ) lineCounter += 1;
     // first part: don't match comments, second part: match words
-    if ( /^\t\/\/|^\/\/|^\/\*|^\s\*/ !:= n && /\w/ := n ) println("match: " + n); else println("no match: " + n);
-
+    if ( /^\t\/|^\s\/|^\/|^\/\*|^\t\*+|^\s\*+/ !:= n && /\w|\{|\}/ := n ) lineCounter += 1;
+    if ( /^\t\/|^\s\/|^\/|^\/\*|^\t\*+|^\s\*+/ !:= n && /\w|\{|\}/ := n ) println("match: " + n); else println("no match: " + n);
   } 
   return lineCounter;
 }
