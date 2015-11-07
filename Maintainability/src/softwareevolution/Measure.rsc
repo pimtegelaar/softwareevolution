@@ -40,5 +40,14 @@ public int countLOC(str sourcecode) {
   return lineCounter;
 }
 
+public map[loc,int] linesPerClass(M3 model) {
+	lpc = ();
+	for (c <- classes(model)) {
+		lines = countLOC(readFile(c));
+		lpc[c] = lines;
+	}
+	return lpc;
+}
+
 // someFile = readFile(|project://example-project/src/Apple.java|);
 // countLOC(someFile);
