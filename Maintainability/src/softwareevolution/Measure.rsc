@@ -5,7 +5,7 @@ import lang::java::jdt::m3::Core;
 import List;
 import String;
 import IO;
-
+import Map;
 
 public M3 getExampleProject() {
 	return createM3FromEclipseProject(|project://example-project|);
@@ -53,5 +53,13 @@ public map[loc,int] linesPerClass(M3 model) {
 	return lpc;
 }
 
+public int linesProjectTotal(loc project) {
+	M3 model = createM3FromEclipseProject(project);
+	map[loc,int] classTotals = linesPerClass(model);
+	int lineTotal = (0 | it + n | int n <- range(classTotals));
+	return lineTotal;
+}
+
+// someModel = createM3FromEclipseProject(|project://example-project|);
 // someFile = readFile(|project://example-project/src/Apple.java|);
 // countLOC(someFile);
