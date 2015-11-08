@@ -6,58 +6,28 @@ import List;
 import String;
 import IO;
 import Map;
+import softwareevolution::Replace;
 
 public int countLines(str sourcecode) {
-  int lineCount = (0 | it + 1 | /\r\n/ := sourcecode);
+  int lineCount = (0 | it + 1 | /.+\n/ := sourcecode);
   return lineCount;
 }
 
-public int countLOC(str sourcecode) {    
-  int lineCounter = 0;
- 
-  str sourceWithoutCR = replaceAll(sourcecode, "\r", ""); // remove carriage returns
-  str sourceWithoutTabs = replaceAll(sourceWithoutCR, "\t", ""); // remove tab characters
-
-  bool multiLineComment = false;
-  for (n <- split("\n", sourceWithoutTabs)) {
-    str m = trim(n); // remove leading/trailing white spaces
-    if(emptyLine(m) || singleLineComment(m) || multiLineCommentOnOneLine(m)) {
-      println("-- no match: " + m);
-      continue;
-    }  
-    if(multiLineComment) {
-      if(multiLineCommentEnd(m))
-        multiLineComment = false;
-      println("-- no match: " + m);
-      continue;
-    }
-    if(multiLineCommentStart(m)) {
-      multiLineComment = true;
-      println("-- no match: " + m);
-      continue;
-    }
-
-    lineCounter += 1;
-    println("++ match: " + m);
-  } 
-  return lineCounter;
+public str cleanUp(str sourcecode) {
+  noTabsAndCarriageReturn = remove(remove(sourcecode, "\r"), "\t");
+  // We clear the strings, because they may contain comment characters
+  clearStrings = replace(noTabsAndCarriageReturn, "\"","\"","\"\"");
+  // Replace multi- and single-line comments
+  noComments = replace(replace(clearStrings, "/*","*/"), "//","\n");
+  return noComments;
 }
-
-public bool emptyLine(str s) = s == "";
-
-/* True if the line starts with "//" precondition: string is devoid of leading spaces and tabs. */
-public bool singleLineComment (str s) = /^\/\// := s;
-
-public bool multiLineCommentOnOneLine(str s) = /^\/\*.*<end:\*\/$>/ := s;
-
-public bool multiLineCommentStart(str s) = /^\/\*.*/ := s;
-
-public bool multiLineCommentEnd(str s) = /.*\*\/$/ := s;
 
 public map[loc,int] linesPerClass(M3 model) {
   lpc = ();
   for (c <- classes(model)) {
-    lines = countLOC(readFile(c));
+    cleanSource = cleanUp(readFile(c));
+    // We add 1, because readFile trims the last linefeed
+    lines = countLines(cleanSource) + 1;
     lpc[c] = lines;
   }
   return lpc;
