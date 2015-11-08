@@ -61,17 +61,15 @@ public list[str] splitLines(str source) {
 
 public int amountDuplicates(list[str] sourceList) {
 	int checkAmount = size(sourceList) - 6; // Can't check when 5 or less rows are left
-	int fixedCheckAmount = size(sourceList) - 7; // The number of cases to compare the 6 lines against
+	int fixedCheckAmount = size(sourceList) - 5; // The number of cases to compare the 6 lines against
 	int initStartPos = 0;
 	int initEndPos = 5;
 	int checkStartPos = 0;
 	int checkEndPos = 5;
 	int duplicateAmount = 0;
 	
-	while (checkAmount > 0) {  
-	  
-	  for (int n <- [0..fixedCheckAmount]) {	
-	    	
+	while (checkAmount > 0) {  	  
+	  for (int n <- [0..fixedCheckAmount]) {		    	
 	  	if (initStartPos == checkStartPos) { 
 	  		checkStartPos += 1;
 	  		checkEndPos += 1;
@@ -79,15 +77,9 @@ public int amountDuplicates(list[str] sourceList) {
 	  	
 	  	if (sourceList[initStartPos..initEndPos] == sourceList[checkStartPos..checkEndPos]) {
 	  		duplicateAmount += 1;
-	  		println(initStartPos);
-	  		println(initEndPos);
-	  		println(checkStartPos);
-	  		println(checkEndPos);
-	  	}
-	  	
+	  	}  	
 	  	checkStartPos += 1;
-	    checkEndPos += 1;
-	  	
+	    checkEndPos += 1;	  	
 	  }
 	  
 	  initStartPos += 1;
@@ -95,7 +87,6 @@ public int amountDuplicates(list[str] sourceList) {
 	  checkStartPos = 0;
 	  checkEndPos = 5;
 	  checkAmount -= 1;
-	}
-	
+	}	
 	return duplicateAmount;
 }
