@@ -24,10 +24,9 @@ public str cleanUp(str sourcecode) {
 
 public map[loc,int] linesPerClass(M3 model) {
   lpc = ();
-  for (c <- classes(model)) {
+  for (c <- files(model)) {
     cleanSource = cleanUp(readFile(c));
-    // We add 1, because readFile trims the last linefeed
-    lines = countLines(cleanSource) + 1;
+    lines = countLines(cleanSource);
     lpc[c] = lines;
   }
   return lpc;
