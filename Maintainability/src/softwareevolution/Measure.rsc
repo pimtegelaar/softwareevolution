@@ -57,6 +57,17 @@ public int totalLines(M3 model) = (0 | it + subTotal | subTotal <- range(linesPe
 
 public int linesProjectTotal(loc project) = totalLines(createM3FromEclipseProject(project));
 
+public str volumeRank(loc project) {
+	int projectLOC = linesProjectTotal(project);
+	str rank;
+	if (projectLOC > 0        && projectLOC <=   66000) { rank = "++"; }
+	if (projectLOC > 66000    && projectLOC <=  246000) { rank = "+";  }
+	if (projectLOC > 246000   && projectLOC <=  665000) { rank = "o";  }
+	if (projectLOC > 665000   && projectLOC <= 1310000) { rank = "-";  }
+	if (projectLOC > 1310000)                           { rank = "--"; }
+	return rank;
+}
+
 // someModel = createM3FromEclipseProject(|project://example-project|);
 // someFile = readFile(|project://example-project/src/Apple.java|);
 // countLOC(someFile);
