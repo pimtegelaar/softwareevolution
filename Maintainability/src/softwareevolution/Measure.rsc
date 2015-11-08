@@ -53,12 +53,9 @@ public map[loc,int] linesPerClass(M3 model) {
 	return lpc;
 }
 
-public int linesProjectTotal(loc project) {
-	M3 model = createM3FromEclipseProject(project);
-	map[loc,int] classTotals = linesPerClass(model);
-	int lineTotal = (0 | it + n | int n <- range(classTotals));
-	return lineTotal;
-}
+public int totalLines(M3 model) = (0 | it + subTotal | subTotal <- range(linesPerClass(model)));
+
+public int linesProjectTotal(loc project) = totalLines(createM3FromEclipseProject(project));
 
 // someModel = createM3FromEclipseProject(|project://example-project|);
 // someFile = readFile(|project://example-project/src/Apple.java|);
