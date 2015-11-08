@@ -12,25 +12,48 @@ public int countLines(str sourcecode) {
   return lineCount;
 }
 
-/*
-** Volume checks
-*/
 
 public int countLOC(str sourcecode) {    
   int lineCounter = 0;
-  str sourceWithoutTabs = replaceAll(sourcecode, "\t", ""); // remove tab characters
-  for (n <- split("\r\n", sourceWithoutTabs)) {
+ 
+  str sourceWithoutCR = replaceAll(sourcecode, "\r", ""); // remove carriage returns
+  str sourceWithoutTabs = replaceAll(sourceWithoutCR, "\t", ""); // remove tab characters
+
+  bool multiLineComment = false;
+  for (n <- split("\n", sourceWithoutTabs)) {
     str m = trim(n); // remove leading/trailing white spaces
-    // first part: don't match comments, second part: do match words or opening/closing brackets
-    if ( /^\/|^\/\*|^\*/ !:= m && /\w|\{|\}/ := m ) {
-      lineCounter += 1;
-      println("match: " + m);
-  } 
-  else
-    println("no match: " + m);
+    if(emptyLine(m) || singleLineComment(m) || multiLineCommentOnOneLine(m)) {
+      println("-- no match: " + m);
+      continue;
+    }  
+    if(multiLineComment) {
+      if(multiLineCommentEnd(m))
+        multiLineComment = false;
+      println("-- no match: " + m);
+      continue;
+    }
+    if(multiLineCommentStart(m)) {
+      multiLineComment = true;
+      println("-- no match: " + m);
+      continue;
+    }
+
+    lineCounter += 1;
+    println("++ match: " + m);
   } 
   return lineCounter;
 }
+
+public bool emptyLine(str s) = s == "";
+
+/* True if the line starts with "//" precondition: string is devoid of leading spaces and tabs. */
+public bool singleLineComment (str s) = /^\/\// := s;
+
+public bool multiLineCommentOnOneLine(str s) = /^\/\*.*<end:\*\/$>/ := s;
+
+public bool multiLineCommentStart(str s) = /^\/\*.*/ := s;
+
+public bool multiLineCommentEnd(str s) = /.*\*\/$/ := s;
 
 public map[loc,int] linesPerClass(M3 model) {
   lpc = ();
