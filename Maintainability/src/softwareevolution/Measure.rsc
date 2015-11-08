@@ -32,14 +32,16 @@ public int countLines(str sourcecode) {
 
 public int countLOC(str sourcecode) {    
   int lineCounter = 0;
-  for (n <- split("\r\n", sourcecode)) {
-    // first part: don't match comments, second part: match words
-    if ( /^\t\/|^\s\/|^\/|^\/\*|^\t\*+|^\s\*+/ !:= n && /\w|\{|\}/ := n ) {
+  str sourceWithoutTabs = replaceAll(sourcecode, "\t", ""); // remove tab characters
+  for (n <- split("\r\n", sourceWithoutTabs)) {
+    str m = trim(n); // remove leading/trailing white spaces
+    // first part: don't match comments, second part: do match words or opening/closing brackets
+    if ( /^\/|^\/\*|^\*/ !:= m && /\w|\{|\}/ := m ) {
     	lineCounter += 1;
-    	println("match: " + n);
+    	println("match: " + m);
 	} 
 	else
-		println("no match: " + n);
+		println("no match: " + m);
   } 
   return lineCounter;
 }
@@ -67,7 +69,3 @@ public str volumeRank(loc project) {
 	if (projectLOC > 1310000)                           { rank = "--"; }
 	return rank;
 }
-
-// someModel = createM3FromEclipseProject(|project://example-project|);
-// someFile = readFile(|project://example-project/src/Apple.java|);
-// countLOC(someFile);
