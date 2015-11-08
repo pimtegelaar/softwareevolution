@@ -12,11 +12,7 @@ public str replaceNewlines(str s) {
 }
 
 /** Replaces the values between the start symbol (ss) and the end symbol (es) in the string (s) with nothing. */
-public str replace(str s, str ss, str es) {
-  if(/^<before:.*?><newline:<ss>.*?<es>><after:.*>/s := s)
-    return before + replace(after, ss, es);  
-  return s;
-}
+public str replace(str s, str ss, str es) = replace(s, ss, es, "");
 
 /** Replaces the values between the start symbol (ss) and the end symbol (es) in the string (s) with a replacement (r). */
 public str replace(str s, str ss, str es, str r) {
