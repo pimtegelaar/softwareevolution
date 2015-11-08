@@ -19,7 +19,7 @@ public class HelloWorld {
 		int nine = 3
 				* 3;
 		
-		System.out.println(nine);		
+		/* Code between... */ System.out.println(nine); /* ...comments. */		
 		System.out.println("Bye // Bye");		
 	}
 
