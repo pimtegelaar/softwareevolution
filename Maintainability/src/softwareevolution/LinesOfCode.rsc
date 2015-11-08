@@ -12,7 +12,6 @@ public int countLines(str sourcecode) {
   return lineCount;
 }
 
-
 public int countLOC(str sourcecode) {    
   int lineCounter = 0;
  
