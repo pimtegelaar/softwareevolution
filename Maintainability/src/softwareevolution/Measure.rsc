@@ -8,9 +8,11 @@ import IO;
 import Map;
 import softwareevolution::LinesOfCode;
 import softwareevolution::Duplication;
+import softwareevolution::UnitComplexity;
+import softwareevolution::UnitSize;
 
 public M3 getExampleProject() {
-	return createM3FromEclipseProject(|project://example-project|);
+	return createM3FromEclipseProject(|project://testrascal|);
 }
 
 public M3 getHyperSonicDB() {
