@@ -45,28 +45,39 @@ public list[loc] getComments(M3 model) {
 	return comments;
 }
 
-public str removeComments(M3 model) {
+public map[int,str] removeComments(M3 model) {
 	
 	list[loc] comments = getComments(model);
-	str source = "";
+	map[int,str] source = ();
+	map[int,str] newSource = ();
+	list[str] splittedSource = [];
+	str mergedSource = "";
 	str replaceComment = "";
-	int startLine = 0;
+	int beginLine = 0;
 	int endLine = 0;
-	int startColumn = 0;
+	int beginColumn = 0;
 	int endColumn = 0;
+	int i = 0;
 	
 	for (c <- files(model)) {
-		source = readFile(c);
+		source = (i: readFile(c));
+		splittedSource = split("\r\n", source[i]);
 		for (p <- comments) {
 			if (c.file == p.file) {
 				if (p.begin.line == p.end.line) {
-					println("match");
+					beginLine = p.begin.line - 1;
+					beginColumn = p.begin.column;
+					endColumn = p.end.column;
+					replaceComment = substring(splittedSource[beginLine], beginColumn, endColumn);
+					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"$replaced$");
 				}
 			}
-		} 
+		}
+		for (s <- splittedSource) { mergedSource = mergedSource + "\r\n" + s; }
+		newSource = newSource + (i: mergedSource);
+		i += 1;		
 	}
-	
-	return source;
+	return newSource;
 }
 
 /*
