@@ -60,3 +60,25 @@ public int amountDuplicates(list[str] sourceList) {
 	}	
 	return duplicateAmount;
 }
+
+/*
+** Started working on the function to find duplicate code
+** Base is the map of sourcecode (without comments)
+** Todo: - create a list of sourcelines and start comparing sources
+**       - think of efficient method to compare
+**       - proper definition for duplicate?
+*/
+
+public list[map[int,str]] percentageDuplicates(M3 model) {
+	
+	int percentageDuplicates = 0;
+	map[int,str] sourceMap = removeComments(model);
+	
+	// input is a map with all sourcefiles, split each source into a map of sourcelines
+	list[map[int,str]] sourceLineList = [ (s:sourceMap[s]) | s <- [0..size(sourceMap)] ];
+	
+	// start comparing sets of 6 sourcelines with the rest of the sourcecode
+	
+	//return percentageDuplicates;
+	return sourceLineList;
+}
