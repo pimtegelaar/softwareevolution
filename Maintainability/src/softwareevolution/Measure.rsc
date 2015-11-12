@@ -48,7 +48,7 @@ public list[loc] getComments(M3 model) {
 public map[int,str] removeComments(M3 model) {
 	
 	list[loc] comments = getComments(model);
-	map[int,str] source = ();
+	str source = "";
 	map[int,str] newSource = ();
 	list[str] splittedSource = [];
 	str mergedSource = "";
@@ -60,9 +60,9 @@ public map[int,str] removeComments(M3 model) {
 	int i = 0;
 	
 	for (c <- files(model)) {
-		source = (i: readFile(c));
+		source = readFile(c);
 		println(c);
-		splittedSource = split("\r\n", source[i]);
+		splittedSource = split("\r\n", source);
 		for (p <- comments) {
 			if (c.file == p.file) {
 				
@@ -72,7 +72,7 @@ public map[int,str] removeComments(M3 model) {
 					beginColumn = p.begin.column;
 					endColumn = p.end.column;
 					replaceComment = substring(splittedSource[beginLine], beginColumn, endColumn);
-					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"$replaced$");
+					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
 				}
 				
 				// multiline comments
@@ -85,24 +85,26 @@ public map[int,str] removeComments(M3 model) {
 						// replace beginline
 						if ( l == beginLine ) {
 							replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacefirstmultiline$");
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
 						}
 						// replace lines in between
 						if ( l != beginLine && l != endLine ) { 
-							replaceComment = substring(splittedSource[l], 1, size(splittedSource[l]));
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacebetweenmultiline$");
+							replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
 						}
 						// replace endline
 						if ( l == endLine ) { 
-							replaceComment = substring(splittedSource[l], 1, endColumn);
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacelastmultiline$");
+							replaceComment = substring(splittedSource[l], 0, endColumn);
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
 						}
 					}
 				}
 			}
 		}
 		for (s <- splittedSource) { mergedSource = mergedSource + "\r\n" + s; }
+		mergedSource = replaceFirst(mergedSource, "\r\n", "");
 		newSource = newSource + (i: mergedSource);
+		mergedSource = "";
 		i += 1;		
 	}
 	return newSource;
