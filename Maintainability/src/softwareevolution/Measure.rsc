@@ -61,15 +61,43 @@ public map[int,str] removeComments(M3 model) {
 	
 	for (c <- files(model)) {
 		source = (i: readFile(c));
+		println(c);
 		splittedSource = split("\r\n", source[i]);
 		for (p <- comments) {
 			if (c.file == p.file) {
+				
+				// singleline comments
 				if (p.begin.line == p.end.line) {
 					beginLine = p.begin.line - 1;
 					beginColumn = p.begin.column;
 					endColumn = p.end.column;
 					replaceComment = substring(splittedSource[beginLine], beginColumn, endColumn);
 					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"$replaced$");
+				}
+				
+				// multiline comments
+				if (p.begin.line != p.end.line) {
+					beginLine = p.begin.line - 1;
+					endLine = p.end.line - 1;
+					beginColumn = p.begin.column;
+					endColumn = p.end.column;
+					for (l <- [beginLine..endLine + 1]) {										
+						// replace beginline
+						if ( l == beginLine ) {
+							replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacefirstmultiline$");
+						}
+						// replace lines in between
+						if ( l != beginLine && l != endLine ) { 
+							replaceComment = substring(splittedSource[l], 1, size(splittedSource[l]));
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacebetweenmultiline$");
+						}
+						// replace endline
+						if ( l == endLine ) { 
+							replaceComment = substring(splittedSource[l], 1, endColumn);
+							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"$replacelastmultiline$");
+						}
+					}
 				}
 			}
 		}
