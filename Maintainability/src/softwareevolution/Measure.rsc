@@ -101,7 +101,10 @@ public map[int,str] removeComments(M3 model) {
 				}
 			}
 		}
-		for (s <- splittedSource) { mergedSource = mergedSource + "\r\n" + s; }
+		for (s <- splittedSource) { 
+			// remove new lines and leading/trailing white spaces (remove too much new lines now?)
+			if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\r\n" + s; }
+		}
 		mergedSource = replaceFirst(mergedSource, "\r\n", "");
 		newSource = newSource + (i: mergedSource);
 		mergedSource = "";
