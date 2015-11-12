@@ -61,7 +61,6 @@ public map[int,str] removeComments(M3 model) {
 	
 	for (c <- files(model)) {
 		source = readFile(c);
-		println(c);
 		splittedSource = split("\r\n", source);
 		for (p <- comments) {
 			if (c.file == p.file) {
