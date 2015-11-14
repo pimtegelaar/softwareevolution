@@ -103,7 +103,7 @@ public int checkLineOccurence(list[map[int,str]] source, str line) {
 
 // calculate the percentage of duplicates
 // todo: method to compare the map content
-public list[map[int,int]] pD(M3 model) {
+public list[map[int,int]] percetangeDuplicates(M3 model) {
 	
 	int percentageDuplicates = 0;
 	int duplicateLineAmount = 0;
