@@ -103,7 +103,7 @@ public int checkLineOccurence(list[map[int,str]] source, str line) {
 
 // calculate the percentage of duplicates
 // todo: method to compare the map content
-public list[map[int,int]] percetangeDuplicates(M3 model) {
+public list[map[int,int]] pD(M3 model) {
 	
 	int percentageDuplicates = 0;
 	int duplicateLineAmount = 0;
@@ -113,7 +113,6 @@ public list[map[int,int]] percetangeDuplicates(M3 model) {
 	list[map[int,int]] occurenceList = [];
 	
 	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
-	
 	int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
 	
 	int initStartPos = 0;
@@ -125,15 +124,18 @@ public list[map[int,int]] percetangeDuplicates(M3 model) {
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
 			// bad construction to check occurences of line in all source
-			occurences = checkLineOccurence(sourceLineMap, sourceLineMap[f][l]);			
-			occurenceSubList = [ (m:occurences | int m <- [0..l]) ] ;
+			occurences = checkLineOccurence(sourceLineMap, sourceLineMap[f][l]);
+			//if (sourceLineMap[f][l] == "\t\tdoingTheSameThing = 1;") { println(occurences); }
+			
+			//occurencelist not correct yet
+			//occurenceSubList = [ (m:occurences | int m <- [0..l]) ] ;
+			
 		}
-		occurenceList = occurenceList + occurenceSubList;
-		occurenceSubList = [];
+		//occurenceList = occurenceList + occurenceSubList;
+		//occurenceSubList = [];
 	}
 	
 	// start comparing sets of 6 sourcelines with the rest of the sourcecode
-	
 	
 	//return percentageDuplicates;
 	return occurenceList;
