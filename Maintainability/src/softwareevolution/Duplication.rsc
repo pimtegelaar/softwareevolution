@@ -86,12 +86,55 @@ public list[map[int,str]] mapSourceLines(M3 model) {
 	return sourceLineList;
 }
 
-public list[map[int,str]] percentageDuplicates(M3 model) {
+// check how much a line occures in a sourceLineList
+public int checkLineOccurence(list[map[int,str]] source, str line) {
+	
+	int occurences = 0;
+	
+	// assumption is that source is a dence map
+	for ( s <- [0..size(source)] ) {
+		for ( l <- [0..size(source[s])] ) {
+			if ( source[s][l] == line ) { occurences += 1; }
+		}
+	}
+	
+	return occurences;
+}
+
+// calculate the percentage of duplicates
+// todo: method to compare the map content
+public list[map[int,int]] pD(M3 model) {
 	
 	int percentageDuplicates = 0;
-	list[map[int,str]] sourceLineMap = removeComments(model);
+	int duplicateLineAmount = 0;
+	list[map[int,str]] sourceLineMap = mapSourceLines(model);
+	int occurences = 0;
+	list[map[int,int]] occurenceSubList = [];
+	list[map[int,int]] occurenceList = [];
+	
+	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
+	
+	int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
+	
+	int initStartPos = 0;
+	int initEndPos = 5;
+	int checkStartPos = 0;
+	int checkEndPos = 5;
+	
+	// for all sourcelines check number of occurences in code
+	for ( f <- [0..size(sourceLineMap)] ) {
+		for ( l <- [0..size(sourceLineMap[f])] ) {
+			// bad construction to check occurences of line in all source
+			occurences = checkLineOccurence(sourceLineMap, sourceLineMap[f][l]);			
+			occurenceSubList = [ (m:occurences | int m <- [0..l]) ] ;
+		}
+		occurenceList = occurenceList + occurenceSubList;
+		occurenceSubList = [];
+	}
 	
 	// start comparing sets of 6 sourcelines with the rest of the sourcecode
 	
-	return percentageDuplicates;
+	
+	//return percentageDuplicates;
+	return occurenceList;
 }
