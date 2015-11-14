@@ -1,15 +1,15 @@
 module softwareevolution::Measure
 
+import Prelude;
+
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
-import List;
-import String;
-import IO;
-import Map;
+
 import softwareevolution::LinesOfCode;
 import softwareevolution::Duplication;
 import softwareevolution::UnitComplexity;
 import softwareevolution::UnitSize;
+import softwareevolution::CommentCleanup;
 
 public M3 getExampleProject() {
 	return createM3FromEclipseProject(|project://example-project|);
@@ -34,80 +34,10 @@ public int countMethods(M3 model, loc class) {
 }
 
 /*
-** Cleanup source code
-*/
-
-public list[loc] getComments(M3 model) = [e | <_,e> <- model@documentation];
-
-
-public map[int,str] removeComments(M3 model) {
-	
-	list[loc] comments = getComments(model);
-	map[int,str] newSource = ();
-	list[str] splittedSource = [];
-	str mergedSource = "";
-	int i = 0;
-	
-	for (c <- files(model)) {
-		source = readFile(c);
-		splittedSource = split("\r\n", source);
-		for (comment <- comments) {
-		  if (c.file == comment.file) {		  
-        removeComment(comment,splittedSource);
-		  }
-		}
-		for (s <- splittedSource) { 
-			// remove new lines and leading/trailing white spaces (remove too much new lines now?)
-			if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\r\n" + s; }
-		}
-		mergedSource = replaceFirst(mergedSource, "\r\n", "");
-		newSource = newSource + (i: mergedSource);
-		mergedSource = "";
-		i += 1;		
-	}
-	return newSource;
-}
-
-private void removeComment(loc comment, list[str] splittedSource) {
-  // singleline comments
-  if (comment.begin.line == comment.end.line) {
-    beginLine = comment.begin.line - 1;
-    beginColumn = comment.begin.column;
-    endColumn = comment.end.column;
-    currentLine = splittedSource[beginLine];
-    replaceComment = substring(currentLine, beginColumn, endColumn);
-    splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
-  }
-  
-  // multiline comments
-  if (comment.begin.line != comment.end.line) {
-    beginLine = comment.begin.line - 1;
-    endLine = comment.end.line - 1;
-    beginColumn = comment.begin.column;
-    endColumn = comment.end.column;
-    for (l <- [beginLine..endLine + 1]) {                   
-      // replace beginline
-      if ( l == beginLine ) {
-        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-      }
-      // replace lines in between
-      if ( l != beginLine && l != endLine ) { 
-        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-      }
-      // replace endline
-      if ( l == endLine ) { 
-        replaceComment = substring(splittedSource[l], 0, endColumn);
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-      }
-    }
-  }
-}
-
-/*
-** Metrics
-*/
+ * ----------- 
+ *   Metrics   
+ * ----------- 
+ */
 
 public str volumeRank(loc project) {
 	int projectLOC = linesProjectTotal(project);
