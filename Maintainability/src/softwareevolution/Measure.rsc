@@ -52,15 +52,9 @@ public list[loc] getComments(M3 model) {
 public map[int,str] removeComments(M3 model) {
 	
 	list[loc] comments = getComments(model);
-	str source = "";
 	map[int,str] newSource = ();
 	list[str] splittedSource = [];
 	str mergedSource = "";
-	str replaceComment = "";
-	int beginLine = 0;
-	int endLine = 0;
-	int beginColumn = 0;
-	int endColumn = 0;
 	int i = 0;
 	
 	for (c <- files(model)) {
