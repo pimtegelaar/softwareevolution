@@ -12,6 +12,10 @@ import softwareevolution::UnitComplexity;
 import softwareevolution::UnitSize;
 
 public M3 getExampleProject() {
+	return createM3FromEclipseProject(|project://example-project|);
+}
+
+public M3 getTestRascal() {
 	return createM3FromEclipseProject(|project://testrascal|);
 }
 
@@ -33,72 +37,24 @@ public int countMethods(M3 model, loc class) {
 ** Cleanup source code
 */
 
-public list[loc] getComments(M3 model) {
-	
-	rel[loc,loc] d = model@documentation;
-	list[loc] comments = [];  
-	
-	for ( <_,e> <- d ) {
-		comments = comments + e;
-	}
-	
-	return comments;
-}
+public list[loc] getComments(M3 model) = [e | <_,e> <- model@documentation];
+
 
 public map[int,str] removeComments(M3 model) {
 	
 	list[loc] comments = getComments(model);
-	str source = "";
 	map[int,str] newSource = ();
 	list[str] splittedSource = [];
 	str mergedSource = "";
-	str replaceComment = "";
-	int beginLine = 0;
-	int endLine = 0;
-	int beginColumn = 0;
-	int endColumn = 0;
 	int i = 0;
 	
 	for (c <- files(model)) {
 		source = readFile(c);
 		splittedSource = split("\r\n", source);
-		for (p <- comments) {
-			if (c.file == p.file) {
-				
-				// singleline comments
-				if (p.begin.line == p.end.line) {
-					beginLine = p.begin.line - 1;
-					beginColumn = p.begin.column;
-					endColumn = p.end.column;
-					replaceComment = substring(splittedSource[beginLine], beginColumn, endColumn);
-					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
-				}
-				
-				// multiline comments
-				if (p.begin.line != p.end.line) {
-					beginLine = p.begin.line - 1;
-					endLine = p.end.line - 1;
-					beginColumn = p.begin.column;
-					endColumn = p.end.column;
-					for (l <- [beginLine..endLine + 1]) {										
-						// replace beginline
-						if ( l == beginLine ) {
-							replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-						}
-						// replace lines in between
-						if ( l != beginLine && l != endLine ) { 
-							replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-						}
-						// replace endline
-						if ( l == endLine ) { 
-							replaceComment = substring(splittedSource[l], 0, endColumn);
-							splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-						}
-					}
-				}
-			}
+		for (comment <- comments) {
+		  if (c.file == comment.file) {		  
+        removeComment(comment,splittedSource);
+		  }
 		}
 		for (s <- splittedSource) { 
 			// remove new lines and leading/trailing white spaces (remove too much new lines now?)
@@ -110,6 +66,43 @@ public map[int,str] removeComments(M3 model) {
 		i += 1;		
 	}
 	return newSource;
+}
+
+private void removeComment(loc comment, list[str] splittedSource) {
+  // singleline comments
+  if (comment.begin.line == comment.end.line) {
+    beginLine = comment.begin.line - 1;
+    beginColumn = comment.begin.column;
+    endColumn = comment.end.column;
+    currentLine = splittedSource[beginLine];
+    replaceComment = substring(currentLine, beginColumn, endColumn);
+    splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
+  }
+  
+  // multiline comments
+  if (comment.begin.line != comment.end.line) {
+    beginLine = comment.begin.line - 1;
+    endLine = comment.end.line - 1;
+    beginColumn = comment.begin.column;
+    endColumn = comment.end.column;
+    for (l <- [beginLine..endLine + 1]) {                   
+      // replace beginline
+      if ( l == beginLine ) {
+        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
+        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+      }
+      // replace lines in between
+      if ( l != beginLine && l != endLine ) { 
+        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
+        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+      }
+      // replace endline
+      if ( l == endLine ) { 
+        replaceComment = substring(splittedSource[l], 0, endColumn);
+        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+      }
+    }
+  }
 }
 
 /*
