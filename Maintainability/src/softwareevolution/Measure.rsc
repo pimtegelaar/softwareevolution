@@ -37,17 +37,8 @@ public int countMethods(M3 model, loc class) {
 ** Cleanup source code
 */
 
-public list[loc] getComments(M3 model) {
-	
-	rel[loc,loc] d = model@documentation;
-	list[loc] comments = [];  
-	
-	for ( <_,e> <- d ) {
-		comments = comments + e;
-	}
-	
-	return comments;
-}
+public list[loc] getComments(M3 model) = [e | <_,e> <- model@documentation];
+
 
 public map[int,str] removeComments(M3 model) {
 	
