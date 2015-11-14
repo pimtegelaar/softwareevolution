@@ -12,6 +12,10 @@ import softwareevolution::UnitComplexity;
 import softwareevolution::UnitSize;
 
 public M3 getExampleProject() {
+	return createM3FromEclipseProject(|project://example-project|);
+}
+
+public M3 getTestRascal() {
 	return createM3FromEclipseProject(|project://testrascal|);
 }
 
@@ -70,7 +74,8 @@ public map[int,str] removeComments(M3 model) {
 					beginLine = p.begin.line - 1;
 					beginColumn = p.begin.column;
 					endColumn = p.end.column;
-					replaceComment = substring(splittedSource[beginLine], beginColumn, endColumn);
+					currentLine = splittedSource[beginLine];
+					replaceComment = substring(currentLine, beginColumn, endColumn);
 					splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
 				}
 				
