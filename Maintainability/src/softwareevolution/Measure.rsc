@@ -52,7 +52,7 @@ public str volumeRank(loc project) {
 
 public str duplicationRank(loc project) {
 	M3 model = createM3FromEclipseProject(project);
-	real pD = percentageDuplicates(model);
+	int pD = percentageDuplicates(model);
 	str rank;
 	if (pD > 0 &&  pD <= 3)   { rank = "++"; }
 	if (pD > 3 &&  pD <= 5)   { rank = "+"; }
