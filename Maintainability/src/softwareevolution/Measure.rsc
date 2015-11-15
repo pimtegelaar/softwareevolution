@@ -27,6 +27,25 @@ public M3 getTestRascal()  = createM3FromEclipseProject(testRascal);
 public M3 getHyperSonicDB()  = createM3FromEclipseProject(hyperSonicDB);
 public M3 getSmallDB()  = createM3FromEclipseProject(smallDB);
 
+public int r(str s) {
+  switch(s) {
+     case "++": return 5;
+     case " +": return 4;
+     case " o": return 3;
+     case " -": return 2;
+     case "--": return 1;
+  }
+}
+
+public str r(int s) {
+  switch(s) {
+     case 5: return "++";
+     case 4: return " +";
+     case 3: return " o";
+     case 2: return " -";
+     case 1: return "--";
+  }
+}
 
 /*
  * ----------- 
@@ -41,18 +60,25 @@ public void measure(loc project) {
   dr = duplicationRank(project);
   
   str result =
-  "              -------------------------------------------------
-  '              | Volume | Complexity | Duplication | Unit size |
-  '              |  <vr>    |    <ucr>      |     <dr>      |    <usr>     |
-  '-------------------------------------------------------------------
-  'Analyzability |   X    |            |      X      |     X     | ? |
-  'Changeability |        |     X      |      X      |           | ? |
-  'Stability     |        |            |             |     X     | ? |
-  '-------------------------------------------------------------------
+  "                 -------------------------------------------------
+  '                 | Volume | Complexity | Duplication | Unit size |
+  '                 |  <vr>    |    <ucr>      |     <dr>      |    <usr>     |
+  ' ----------------------------------------------------------------------
+  ' | Analyzability |   X    |            |      X      |     X     | <analizability(vr,dr,usr)> |
+  ' | Changeability |        |     X      |      X      |           | <changeability(ucr,dr)> |
+  ' | Stability     |        |            |             |     X     | <stability(usr)> |
+  ' | Testability   |        |     X      |             |     X     | <testability(ucr,usr)> |
+  ' ----------------------------------------------------------------------
   ";
   
   println(result);
 }
+
+private str analizability(str vr, str dr, str usr) = r((r(vr) + r(dr) + r(usr)) / 3);
+private str changeability(str ucr, str dr) = r((r(ucr) + r(dr)) / 2);
+private str stability(str usr) = usr;
+private str testability(str ucr, str usr) = r((r(ucr) + r(usr)) / 2);
+
 
 public str volumeRank(loc project) {
 	projectLOC = linesProjectTotal(project);
