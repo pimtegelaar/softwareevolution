@@ -8,7 +8,7 @@ public list[loc] getComments(M3 model) = [e | <_,e> <- model@documentation];
 
 /** Replaces comments with spaces */
 public map[str,str] eraseComments(M3 model) {
-  map[str,str] files = (f.path:readFile(f) | f <- files(model));    
+  map[str,str] files = (f.path:readFileEnc(f,"UTF-8") | f <- files(model));    
   for (comment <- getComments(model)) {
     file = files[comment.path];
     cleared = replaceWithSpace(file, comment.offset, comment.length);
