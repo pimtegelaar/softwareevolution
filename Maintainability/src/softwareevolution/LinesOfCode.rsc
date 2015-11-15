@@ -9,7 +9,7 @@ import softwareevolution::Replace;
 import softwareevolution::CommentCleanup;
 
 public int countLines(str sourcecode) {
-  int lineCount = (0 | it + 1 | /.+\n/ := sourcecode);
+  int lineCount = (0 | it + 1 | /.+\r\n/ := sourcecode);
   return lineCount;
 }
 
@@ -41,9 +41,8 @@ public map[loc,int] linesPerMethod(M3 model) {
       loc method = myMethods[methodDeclaration];
       str fileLoc = classDeclaration.src.path;
       str file = withoutComments[fileLoc];
-      offset = classDeclaration.src.offset + method.offset;
-      length = method.length;
-      end = offset+length;
+      offset = method.offset;
+      end = offset+method.length;
       methodSrc = substring(file, offset, end);
       lpm[method]=countLines(methodSrc);
     }
