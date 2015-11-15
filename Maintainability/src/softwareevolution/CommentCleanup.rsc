@@ -45,22 +45,6 @@ public map[int,str] removeComments(M3 model) {
     splittedSource = split("\r\n", source);
     for (comment <- comments) {
       if (c.file == comment.file) {     
-        removeComment(comment,splittedSource);
-      }
-    }
-    for (s <- splittedSource) { 
-      // remove new lines and leading/trailing white spaces (remove too much new lines now?)
-      if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\r\n" + s; }
-    }
-    mergedSource = replaceFirst(mergedSource, "\r\n", "");
-    newSource = newSource + (i: mergedSource);
-    mergedSource = "";
-    i += 1;   
-  }
-  return newSource;
-}
-
-private void removeComment(loc comment, list[str] splittedSource) {
   // singleline comments
   if (comment.begin.line == comment.end.line) {
     beginLine = comment.begin.line - 1;
@@ -95,4 +79,16 @@ private void removeComment(loc comment, list[str] splittedSource) {
       }
     }
   }
+      }
+    }
+    for (s <- splittedSource) { 
+      // remove new lines and leading/trailing white spaces (remove too much new lines now?)
+      if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\r\n" + s; }
+    }
+    mergedSource = replaceFirst(mergedSource, "\r\n", "");
+    newSource = newSource + (i: mergedSource);
+    mergedSource = "";
+    i += 1;   
+  }
+  return newSource;
 }
