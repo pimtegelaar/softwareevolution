@@ -32,7 +32,7 @@ public str repeat(int l, str s) {
   return result;
 }
 
-/** Removes comments and generate map of sourcelines */
+/** Remove comments and generate map of sourcelines */
 public map[int,str] removeComments(M3 model) {
   
   list[loc] comments = getComments(model);
@@ -46,7 +46,8 @@ public map[int,str] removeComments(M3 model) {
     source = replaceAll(source, "\r\n", "\n");
     splittedSource = split("\n", source);
     for (comment <- comments) {
-      if (c.file == comment.file) {    
+      if (c.path == comment.path) {    
+		  
 		  // singleline comments
 		  if (comment.begin.line == comment.end.line) {
 		    beginLine = comment.begin.line - 1;
@@ -83,6 +84,7 @@ public map[int,str] removeComments(M3 model) {
 		  }
       }
     }
+    
     for (s <- splittedSource) { 
       // remove new lines and leading/trailing white spaces
       if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\n" + s; }
