@@ -82,6 +82,15 @@ public str unitSizeRank(loc project) {
 }
 
 public str unitComplexityRank(loc project) {
+  unitComplexity = calcRiskComplexity(project);
+  if (unitComplexity.moderate > 50 || unitComplexity.high > 15 || unitComplexity.veryhigh > 5)  
+    return "--";
+  if (unitComplexity.moderate > 40 || unitComplexity.high > 10 || unitComplexity.veryhigh > 0)
+    return "-";
+  if (unitComplexity.moderate > 30 || unitComplexity.high > 5)
+    return "o";
+  if (unitComplexity.moderate > 25 || unitComplexity.high > 0)
+    return "+";
   return "++";
 }
 
