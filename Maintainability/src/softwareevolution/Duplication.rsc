@@ -12,8 +12,6 @@ import softwareevolution::CommentCleanup;
 /*
 ** Find duplicate code and calculate percentage of duplicate code
 ** Base is the map of sourcecode (without comments)
-** Todo: - think of more efficient methods to look for duplicates
-**       - use proper Rascal functions to reduce cyclomatic complexity
 */
 
 /** produce sourceLineList, contains a map with the source for all model files */
@@ -47,8 +45,7 @@ public int checkLOCOccurence(list[map[int,str]] source, str line) {
 	return occurences;
 }
 
-/** check whether 6-line duplication exist for a specific line */
-// bug: not correct to add 6 to counter each time, how to keep track?
+/** check whether 6-line duplication exists for a specific line */
 public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] checkPositions) {
 	
 	int occurences = 0;
@@ -60,7 +57,8 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] che
 	str line5 = "";
 	str line6 = "";
 	str lines = "";
-	list[str] lineList = [];	
+	list[str] lineList = [];
+	int i = 0;
 	
 	// create a linelist based on the check positions
 	for ( p <- [0..size(checkPositions)] ) {
@@ -85,8 +83,9 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] che
 		// check whether the initial six lines (zeroth position) are duplicate with rest of list	
 		for ( l <- [1..size(lineList)] ) {
 			if ( lineList[0] == lineList[l] ) {
+				if ( i == 0 ) { occurences += 6; }
 				occurences += 6;
-				println(lineList[0]);
+				i += 1;
 			}
 		}
 	}
@@ -127,7 +126,6 @@ public int percentageDuplicates(M3 model) {
 	list[str] listLinesProcessed = [];
 	
 	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
-	println(totalLOC);
 	
 	// for all sourcelines check number of occurences in code
 	for ( f <- [0..size(sourceLineMap)] ) {
@@ -142,7 +140,7 @@ public int percentageDuplicates(M3 model) {
 	// only check for lines that occur more then once
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
-			if ( occurenceList[f][l] > 1 ) {												
+			if ( occurenceList[f][l] > 1 ) {
 				// only check for lines that have not been processed
 				if ( sourceLineMap[f][l] in listLinesProcessed == false ) {
 					listPositions = createPositionList(sourceLineMap, sourceLineMap[f][l]);
@@ -155,7 +153,6 @@ public int percentageDuplicates(M3 model) {
 	}
 	
 	realPercentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
-	println(realPercentageDuplicates);
 	println(duplicateLineAmount);
 	
 	if ( realPercentageDuplicates > 0 ) { 

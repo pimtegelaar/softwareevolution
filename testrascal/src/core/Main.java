@@ -65,6 +65,13 @@ public class Main {
 		
 		System.out.println(doingTheSameThing); /* Seriously */ doingTheSameThing = 7;
 		
+		doingTheSameThing = 1;
+		doingTheSameThing = 2;
+		doingTheSameThing = 3;
+		doingTheSameThing = 4;
+		doingTheSameThing = 5;
+		doingTheSameThing = 6;
+		
 		System.out.println("Is the program analyzed: " + analyzer);
 	}
 
