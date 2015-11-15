@@ -86,7 +86,6 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] che
 		for ( l <- [1..size(lineList)] ) {
 			if ( lineList[0] == lineList[l] ) {
 				occurences += 6;
-				println(lineList[0]);
 			}
 		}
 	}
@@ -154,6 +153,7 @@ public int percentageDuplicates(M3 model) {
 	}
 	
 	realPercentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
+	println(realPercentageDuplicates);
 	
 	if ( realPercentageDuplicates > 0 ) { 
 		percentageDuplicates = toInt(realPercentageDuplicates); 
