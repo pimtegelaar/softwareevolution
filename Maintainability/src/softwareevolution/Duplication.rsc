@@ -120,32 +120,57 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] che
 	for ( p <- [0..size(checkPositions)] ) {
 		for ( sp <- [0..size(checkPositions[p])] ) {
 			initPosition = checkPositions[p][sp];
-			line1 = source[p][initPosition];
-			line2 = source[p][initPosition+1];
-			line3 = source[p][initPosition+2];
-			line4 = source[p][initPosition+3];
-			line5 = source[p][initPosition+4];
-			line6 = source[p][initPosition+5];
-			lines = line1 + line2 + line3 + line4 + line5 + line6;
-			lineList = lineList + [lines];
-			lines = "";
+			// check whether there are 5 next lines from initial position
+			if ( size(source[p]) > initPosition+5 ) {
+				line1 = source[p][initPosition];
+				line2 = source[p][initPosition+1];
+				line3 = source[p][initPosition+2];
+				line4 = source[p][initPosition+3];
+				line5 = source[p][initPosition+4];
+				line6 = source[p][initPosition+5];		
+				lines = line1 + line2 + line3 + line4 + line5 + line6;
+				lineList = lineList + [lines];
+				lines = "";
+			}
 		}
 	}
 	
-	// check whether the initial six lines (zeroth position) are duplicate with rest of list	
-	for ( l <- [1..size(lineList)] ) {
-		if ( lineList[0] == lineList[l] ) {
-			occurences += 6;
+	if (isEmpty(lineList) == false) {
+		// check whether the initial six lines (zeroth position) are duplicate with rest of list	
+		for ( l <- [1..size(lineList)] ) {
+			if ( lineList[0] == lineList[l] ) {
+				occurences += 6;
+				println(lineList[0]);
+			}
 		}
 	}
 	
 	return occurences;
 }
 
-// calculate the percentage of duplicates
-public list[map[int,int]] pD(M3 model) {
+// produce a list with duplicate check positions based on a specific line
+public list[list[int]] createPositionList(list[map[int,str]] source, str line) {
 	
-	int percentageDuplicates = 0;
+	list[int] positions = [];
+	list[list[int]] checkPositions = [];
+	
+	for ( f <- [0..size(source)] ) {
+		for ( l <- [0..size(source[f])] ) {
+			if ( source[f][l] == line ) {
+				positions = positions + l;
+			}
+		}
+		checkPositions = checkPositions + [positions];
+		positions = [];
+	}
+	
+	return checkPositions;
+}
+
+// calculate the percentage of duplicates
+public int pD(M3 model) {
+	
+	int percentageDuplicates = 0.;
 	int duplicateLineAmount = 0;
 	list[map[int,str]] sourceLineMap = mapSourceLines(model);
 	int occurences = 0;
@@ -154,13 +179,11 @@ public list[map[int,int]] pD(M3 model) {
 	list[list[int]] listPositions = [];
 	
 	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
-	//int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
 	
 	// for all sourcelines check number of occurences in code
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
-			occurences = checkLOCOccurence(sourceLineMap, sourceLineMap[f][l]);
-			//if (sourceLineMap[f][l] == "\t\tdoingTheSameThing = 1;") { println(occurences); }			
+			occurences = checkLOCOccurence(sourceLineMap, sourceLineMap[f][l]);		
 			occurenceMap = occurenceMap + (l:occurences);			
 		}
 		occurenceList = occurenceList + occurenceMap;
@@ -170,17 +193,15 @@ public list[map[int,int]] pD(M3 model) {
 	// only check for lines that occur more then once
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
-			if ( occurenceList[f][l] > 1 ) {
-				println("test");
-				
-				// create a list with the positions where the sourceline occurs
-				//listPositions = 
-				             
-				//duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, listPositions);
+			if ( occurenceList[f][l] > 1 ) {										
+				listPositions = createPositionList(sourceLineMap, sourceLineMap[f][l]);
+				duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, listPositions);
+				listPositions = [];
 			}
 		}
 	}
 	
-	//return percentageDuplicates;
-	return occurenceList;
+	percentageDuplicates = 100 / totalLOC * duplicateLineAmount;
+	
+	return percentageDuplicates;
 }
