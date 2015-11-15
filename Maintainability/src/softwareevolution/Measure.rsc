@@ -40,14 +40,6 @@ public void measure(loc project) {
   ucr = unitComplexityRank(project);
   dr = duplicationRank(project);
   
-  //str result =
-  //"
-  //'Volume          <vr> 
-  //'Unit size       <usr>
-  //'Unit complexity <ucr>
-  //'Duplication     <dr>
-  //";
-  
   str result =
   "              -------------------------------------------------
   '              | Volume | Complexity | Duplication | Unit size |
@@ -55,8 +47,7 @@ public void measure(loc project) {
   '-------------------------------------------------------------------
   'Analyzability |   X    |            |      X      |     X     | ? |
   'Changeability |        |     X      |      X      |           | ? |
-  'Stability     |        |            |             |     X     | ? |  
-  'Testability   |        |     X      |             |     X     | ? |
+  'Stability     |        |            |             |     X     | ? |
   '-------------------------------------------------------------------
   ";
   
