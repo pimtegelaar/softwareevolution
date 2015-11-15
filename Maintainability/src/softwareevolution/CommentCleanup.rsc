@@ -32,6 +32,7 @@ public str repeat(int l, str s) {
   return result;
 }
 
+/** Remove comments and generate map of sourcelines */
 public map[int,str] removeComments(M3 model) {
   
   list[loc] comments = getComments(model);
@@ -42,50 +43,53 @@ public map[int,str] removeComments(M3 model) {
   
   for (c <- files(model)) {
     source = readFile(c);
-    splittedSource = split("\r\n", source);
+    source = replaceAll(source, "\r\n", "\n");
+    splittedSource = split("\n", source);
     for (comment <- comments) {
-      if (c.file == comment.file) {     
-  // singleline comments
-  if (comment.begin.line == comment.end.line) {
-    beginLine = comment.begin.line - 1;
-    beginColumn = comment.begin.column;
-    endColumn = comment.end.column;
-    currentLine = splittedSource[beginLine];
-    replaceComment = substring(currentLine, beginColumn, endColumn);
-    splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
-  }
+      if (c.path == comment.path) {    
+		  
+		  // singleline comments
+		  if (comment.begin.line == comment.end.line) {
+		    beginLine = comment.begin.line - 1;
+		    beginColumn = comment.begin.column;
+		    endColumn = comment.end.column;
+		    currentLine = splittedSource[beginLine];
+		    replaceComment = substring(currentLine, beginColumn, endColumn);
+		    splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,"");
+		  }
   
-  // multiline comments
-  if (comment.begin.line != comment.end.line) {
-    beginLine = comment.begin.line - 1;
-    endLine = comment.end.line - 1;
-    beginColumn = comment.begin.column;
-    endColumn = comment.end.column;
-    for (l <- [beginLine..endLine + 1]) {                   
-      // replace beginline
-      if ( l == beginLine ) {
-        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-      }
-      // replace lines in between
-      if ( l != beginLine && l != endLine ) { 
-        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
-      }
-      // replace endline
-      if ( l == endLine ) { 
-        replaceComment = substring(splittedSource[l], 0, endColumn);
-        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+		  // multiline comments
+		  if (comment.begin.line != comment.end.line) {
+		    beginLine = comment.begin.line - 1;
+		    endLine = comment.end.line - 1;
+		    beginColumn = comment.begin.column;
+		    endColumn = comment.end.column;
+		    for (l <- [beginLine..endLine + 1]) {                   
+		      // replace beginline
+		      if ( l == beginLine ) {
+		        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+		      }
+		      // replace lines in between
+		      if ( l != beginLine && l != endLine ) { 
+		        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+		      }
+		      // replace endline
+		      if ( l == endLine ) { 
+		        replaceComment = substring(splittedSource[l], 0, endColumn);
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,"");
+		      }
+		    }
+		  }
       }
     }
-  }
-      }
-    }
+    
     for (s <- splittedSource) { 
-      // remove new lines and leading/trailing white spaces (remove too much new lines now?)
-      if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\r\n" + s; }
+      // remove new lines and leading/trailing white spaces
+      if ( isEmpty(trim(s)) == false ) { mergedSource = mergedSource + "\n" + s; }
     }
-    mergedSource = replaceFirst(mergedSource, "\r\n", "");
+    mergedSource = replaceFirst(mergedSource, "\n", "");
     newSource = newSource + (i: mergedSource);
     mergedSource = "";
     i += 1;   
