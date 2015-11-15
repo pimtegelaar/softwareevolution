@@ -11,27 +11,22 @@ import softwareevolution::UnitComplexity;
 import softwareevolution::UnitSize;
 import softwareevolution::CommentCleanup;
 
-public M3 getExampleProject() {
-	return createM3FromEclipseProject(|project://example-project|);
-}
+/*
+ * ----------- 
+ *   Projects   
+ * ----------- 
+ */
+ 
+public loc exampleProject = |project://example-project|;
+public loc testRascal = |project://testrascal|;
+public loc hyperSonicDB = |project://hsqldb-2.3.1|;
+public loc smallDB = |project://smallsql0.21_src|;
 
-public M3 getTestRascal() {
-	return createM3FromEclipseProject(|project://testrascal|);
-}
+public M3 getExampleProject() = createM3FromEclipseProject(exampleProject);
+public M3 getTestRascal()  = createM3FromEclipseProject(testRascal);
+public M3 getHyperSonicDB()  = createM3FromEclipseProject(hyperSonicDB);
+public M3 getSmallDB()  = createM3FromEclipseProject(smallDB);
 
-public M3 getHyperSonicDB() {
-	return createM3FromEclipseProject(|project://hsqldb-2.3.1|);
-}
-
-public M3 getSmallDB() {
-	return createM3FromEclipseProject(|project://smallsql0.21_src|);
-}
-
-public int countMethods(M3 model, loc class) {
-  list[loc] methods = [ e | e <- model@containment[class], e.scheme == "java+method"];
-  int methodCount = size(methods);
-  return methodCount;
-}
 
 /*
  * ----------- 
@@ -60,4 +55,10 @@ public str duplicationRank(loc project) {
 	if (pD > 10 && pD <= 20)  { rank = "-"; }
 	if (pD > 20 && pD <= 100) { rank = "--"; }
 	return rank;
+}
+
+public int countMethods(M3 model, loc class) {
+  list[loc] methods = [ e | e <- model@containment[class], e.scheme == "java+method"];
+  int methodCount = size(methods);
+  return methodCount;
 }
