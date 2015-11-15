@@ -6,6 +6,7 @@ import List;
 import String;
 import IO;
 import Map;
+import softwareevolution::CommentCleanup;
 
 /*
 ** Get source information
@@ -86,8 +87,8 @@ public list[map[int,str]] mapSourceLines(M3 model) {
 	return sourceLineList;
 }
 
-// check how much a line occures in a sourceLineList
-public int checkLineOccurence(list[map[int,str]] source, str line) {
+// check how much a line occurs in a sourceLineList
+public int checkLOCOccurence(list[map[int,str]] source, str line) {
 	
 	int occurences = 0;
 	
@@ -95,6 +96,56 @@ public int checkLineOccurence(list[map[int,str]] source, str line) {
 	for ( s <- [0..size(source)] ) {
 		for ( l <- [0..size(source[s])] ) {
 			if ( source[s][l] == line ) { occurences += 1; }
+		}
+	}
+	
+	return occurences;
+}
+
+// check whether group of 6 lines occurs in a sourceLineList
+public int checkGroupLOCOccurence(list[map[int,str]] source, map[int,str] group) {
+	
+	int occurences = 0;
+	str line1 = "";
+	str line2 = "";
+	str line3 = "";
+	str line4 = "";
+	str line5 = "";
+	str line6 = "";
+	
+	// assumption is that source is a dence map
+	for ( s <- [0..size(source)] ) {
+		for ( l <- [0..size(source[s])] ) {
+			if ( source[s][l] == group[0] ) { 
+				line1 = source[s][l];
+				line2 = source[s][l+1];
+				line3 = source[s][l+2];
+				line4 = source[s][l+3];
+				line5 = source[s][l+4];
+				line6 = source[s][l+5];
+				if  ( line1 == group[0]
+				   && line2 == group[1]
+				   && line3 == group[2]
+				   && line4 == group[3]
+				   && line5 == group[4]
+				   && line6 == group[5]
+				    ) {
+					println("duplicate of 6 found");
+					println(line1);
+					println(line2);
+					println(line3);
+					println(line4);
+					println(line5);
+					println(line6);
+					occurences += 6;   
+				}
+				line1 = "";
+				line2 = "";
+				line3 = "";
+				line4 = "";
+				line5 = "";
+				line6 = "";
+			}
 		}
 	}
 	
@@ -109,31 +160,35 @@ public list[map[int,int]] pD(M3 model) {
 	int duplicateLineAmount = 0;
 	list[map[int,str]] sourceLineMap = mapSourceLines(model);
 	int occurences = 0;
-	list[map[int,int]] occurenceSubList = [];
+	map[int,int] occurenceMap = ();
 	list[map[int,int]] occurenceList = [];
+	map[int,str] compareMap = ();
 	
-	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
-	int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
-	
-	int initStartPos = 0;
-	int initEndPos = 5;
-	int checkStartPos = 0;
-	int checkEndPos = 5;
+	//int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
+	//int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
 	
 	// for all sourcelines check number of occurences in code
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
-			// bad construction to check occurences of line in all source
-			occurences = checkLineOccurence(sourceLineMap, sourceLineMap[f][l]);
-			//if (sourceLineMap[f][l] == "\t\tdoingTheSameThing = 1;") { println(occurences); }
-			
-			//occurencelist not correct yet
-			//occurenceSubList = [ (m:occurences | int m <- [0..l]) ] ;
-			
+			occurences = checkLOCOccurence(sourceLineMap, sourceLineMap[f][l]);
+			//if (sourceLineMap[f][l] == "\t\tdoingTheSameThing = 1;") { println(occurences); }			
+			occurenceMap = occurenceMap + (l:occurences);			
 		}
-		//occurenceList = occurenceList + occurenceSubList;
-		//occurenceSubList = [];
+		occurenceList = occurenceList + occurenceMap;
+		occurenceMap = ();
 	}
+	
+	// only check for lines that occur more then once
+	for ( f <- [0..size(sourceLineMap)] ) {
+		for ( l <- [0..size(sourceLineMap[f])] ) {
+			if ( occurenceList[f][l] > 1 ) {
+				compareMap = ( 0:sourceLineMap[f][l]) + (1:sourceLineMap[f][l+1])
+				             + (2:sourceLineMap[f][l+2]) + (3:sourceLineMap[f][l+3])
+				             + (4:sourceLineMap[f][l+4]) + (5:sourceLineMap[f][l+5]);
+				duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, compareMap);
+			}
+		}
+	}	
 	
 	// start comparing sets of 6 sourcelines with the rest of the sourcecode
 	
