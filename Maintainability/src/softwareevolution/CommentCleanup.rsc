@@ -7,14 +7,14 @@ import lang::java::jdt::m3::Core;
 public list[loc] getComments(M3 model) = [e | <_,e> <- model@documentation];
 
 /** Replaces comments with spaces */
-public set[str] eraseComments(M3 model) {
+public map[str,str] eraseComments(M3 model) {
   map[str,str] files = (f.path:readFile(f) | f <- files(model));    
   for (comment <- getComments(model)) {
     file = files[comment.path];
     cleared = replaceWithSpace(file, comment.offset, comment.length);
     files[comment.path] = cleared;
   }  
-  return range(files);
+  return files;
 }
 
 public str replaceWithSpace(str s, int offset, int length) {
