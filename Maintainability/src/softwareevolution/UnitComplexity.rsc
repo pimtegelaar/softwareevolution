@@ -24,6 +24,7 @@ public tuple[real moderate, real high, real veryhigh] calcRiskComplexity(loc pro
 	int unitComplexity = 0;
 	M3 model = createM3FromEclipseProject(project);
 	map[loc,int] lpm = linesPerMethod(model);
+	real small = 0.0;
 	real moderate = 0.0;
 	real high = 0.0;
 	real veryhigh = 0.0;
@@ -31,13 +32,15 @@ public tuple[real moderate, real high, real veryhigh] calcRiskComplexity(loc pro
 	for ( method <- lpm ) {
 		unitComplexity = calcUnitComplexity(method);
 		if (unitComplexity > 50)
-			veryhigh += lpm[method];
-		else if (unitComplexity > 21)
-			high += lpm[method];
+			veryhigh += 1;
+		else if (unitComplexity > 20)
+			high += 1;
+		else if(unitComplexity > 10)
+			moderate += 1;
 		else
-			moderate += lpm[method];
+		  small += 1;	
 	}
-	total = moderate + high + veryhigh;
+	total = small + moderate + high + veryhigh;
 	real moderatePercent = moderate / total * 100;
 	real highPercent = high / total * 100;
 	real veryhighPercent = veryhigh / total * 100;
