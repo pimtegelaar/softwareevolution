@@ -45,6 +45,20 @@ public str volumeRank(loc project) {
 	return rank;
 }
 
+
+public str unitSizeRank(loc project) {
+  unitSize = determineUnitSize(project);
+  if (unitSize.moderate > 50 || unitSize.high > 15 || unitSize.veryhigh > 5)  
+    return "--";
+  if (unitSize.moderate > 40 || unitSize.high > 10 || unitSize.veryhigh > 0)
+    return "-";
+  if (unitSize.moderate > 30 || unitSize.high > 5)
+    return "o";
+  if (unitSize.moderate > 25 || unitSize.high > 0)
+    return "+";
+  return "++";
+}
+
 public str duplicationRank(loc project) {
 	M3 model = createM3FromEclipseProject(project);
 	int pD = percentageDuplicates(model);
