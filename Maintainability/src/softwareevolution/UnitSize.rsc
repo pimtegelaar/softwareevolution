@@ -10,7 +10,7 @@ import softwareevolution::LinesOfCode;
 /*
 ** Get source information
 */
-tuple[real moderate, real high, real veryhigh] determineUnitSize(loc project) {
+public tuple[real moderate, real high, real veryhigh] determineUnitSize(loc project) {
   map[loc,int] lpm = linesPerMethod(createM3FromEclipseProject(project));
   real small = 0.0;
   real moderate = 0.0;
