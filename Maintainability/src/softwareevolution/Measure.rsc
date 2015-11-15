@@ -33,17 +33,46 @@ public M3 getSmallDB()  = createM3FromEclipseProject(smallDB);
  *   Metrics   
  * ----------- 
  */
+ 
+public void measure(loc project) {
+  vr = volumeRank(project);
+  usr = unitSizeRank(project);
+  ucr = unitComplexityRank(project);
+  dr = duplicationRank(project);
+  
+  //str result =
+  //"
+  //'Volume          <vr> 
+  //'Unit size       <usr>
+  //'Unit complexity <ucr>
+  //'Duplication     <dr>
+  //";
+  
+  str result =
+  "              -------------------------------------------------
+  '              | Volume | Complexity | Duplication | Unit size |
+  '              |  <vr>    |    <ucr>      |     <dr>      |    <usr>     |
+  '-------------------------------------------------------------------
+  'Analyzability |   X    |            |      X      |     X     | ? |
+  'Changeability |        |     X      |      X      |           | ? |
+  'Stability     |        |            |             |     X     | ? |  
+  'Testability   |        |     X      |             |     X     | ? |
+  '-------------------------------------------------------------------
+  ";
+  
+  println(result);
+}
 
 public str volumeRank(loc project) {
 	projectLOC = linesProjectTotal(project);
 	if (projectLOC > 1310000)
 	  return "--";
 	if (projectLOC > 665000)
-	  return rank = "-";
+	  return rank = " -";
 	if (projectLOC > 246000)
-	  return rank = "o";
+	  return rank = " o";
 	if (projectLOC > 66000)
-	  return rank = "+";
+	  return rank = " +";
 	return "++";
 }
 
@@ -53,11 +82,15 @@ public str unitSizeRank(loc project) {
   if (unitSize.moderate > 50 || unitSize.high > 15 || unitSize.veryhigh > 5)  
     return "--";
   if (unitSize.moderate > 40 || unitSize.high > 10 || unitSize.veryhigh > 0)
-    return "-";
+    return " -";
   if (unitSize.moderate > 30 || unitSize.high > 5)
-    return "o";
+    return " o";
   if (unitSize.moderate > 25 || unitSize.high > 0)
-    return "+";
+    return " +";
+  return "++";
+}
+
+public str unitComplexityRank(loc project) {
   return "++";
 }
 
@@ -66,10 +99,10 @@ public str duplicationRank(loc project) {
   if (pD > 20)
     return "--";
   if (pD > 10)
-    return rank = "-";
+    return rank = " -";
   if (pD > 5)
-    return rank = "o";
+    return rank = " o";
   if (pD > 3)
-    return rank = "+";
+    return rank = " +";
   return "++";
 }
