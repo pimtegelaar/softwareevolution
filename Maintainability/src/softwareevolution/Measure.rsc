@@ -35,14 +35,16 @@ public M3 getSmallDB()  = createM3FromEclipseProject(smallDB);
  */
 
 public str volumeRank(loc project) {
-	int projectLOC = linesProjectTotal(project);
-	str rank;
-	if (projectLOC > 0        && projectLOC <=   66000) { rank = "++"; }
-	if (projectLOC > 66000    && projectLOC <=  246000) { rank = "+";  }
-	if (projectLOC > 246000   && projectLOC <=  665000) { rank = "o";  }
-	if (projectLOC > 665000   && projectLOC <= 1310000) { rank = "-";  }
-	if (projectLOC > 1310000)                           { rank = "--"; }
-	return rank;
+	projectLOC = linesProjectTotal(project);
+	if (projectLOC > 1310000)
+	  return "--";
+	if (projectLOC > 665000)
+	  return rank = "-";
+	if (projectLOC > 246000)
+	  return rank = "o";
+	if (projectLOC > 66000)
+	  return rank = "+";
+	return "++";
 }
 
 
@@ -60,15 +62,16 @@ public str unitSizeRank(loc project) {
 }
 
 public str duplicationRank(loc project) {
-	M3 model = createM3FromEclipseProject(project);
-	int pD = percentageDuplicates(model);
-	str rank;
-	if (pD > 0 &&  pD <= 3)   { rank = "++"; }
-	if (pD > 3 &&  pD <= 5)   { rank = "+"; }
-	if (pD > 5 &&  pD <= 10)  { rank = "o"; }
-	if (pD > 10 && pD <= 20)  { rank = "-"; }
-	if (pD > 20 && pD <= 100) { rank = "--"; }
-	return rank;
+	pD = percentageDuplicates(createM3FromEclipseProject(project));
+  if (pD > 20)
+    return "--";
+  if (pD > 10)
+    return rank = "-";
+  if (pD > 5)
+    return rank = "o";
+  if (pD > 3)
+    return rank = "+";
+  return "++";
 }
 
 public int countMethods(M3 model, loc class) {
