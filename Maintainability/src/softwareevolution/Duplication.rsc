@@ -102,8 +102,8 @@ public int checkLOCOccurence(list[map[int,str]] source, str line) {
 	return occurences;
 }
 
-// check whether group of 6 lines occurs in a sourceLineList
-public int checkGroupLOCOccurence(list[map[int,str]] source, map[int,str] group) {
+// check whether groups of 6 lines occur in a sourceLineList
+public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] checkPositions) {
 	
 	int occurences = 0;
 	str line1 = "";
@@ -112,40 +112,30 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, map[int,str] group)
 	str line4 = "";
 	str line5 = "";
 	str line6 = "";
+	str lines = "";
+	list[str] lineList = [];	
+	int initPosition = 0;
 	
-	// assumption is that source is a dence map
-	for ( s <- [0..size(source)] ) {
-		for ( l <- [0..size(source[s])] ) {
-			if ( source[s][l] == group[0] ) { 
-				line1 = source[s][l];
-				line2 = source[s][l+1];
-				line3 = source[s][l+2];
-				line4 = source[s][l+3];
-				line5 = source[s][l+4];
-				line6 = source[s][l+5];
-				if  ( line1 == group[0]
-				   && line2 == group[1]
-				   && line3 == group[2]
-				   && line4 == group[3]
-				   && line5 == group[4]
-				   && line6 == group[5]
-				    ) {
-					println("duplicate of 6 found");
-					println(line1);
-					println(line2);
-					println(line3);
-					println(line4);
-					println(line5);
-					println(line6);
-					occurences += 6;   
-				}
-				line1 = "";
-				line2 = "";
-				line3 = "";
-				line4 = "";
-				line5 = "";
-				line6 = "";
-			}
+	// create a linelist based on the check positions
+	for ( p <- [0..size(checkPositions)] ) {
+		for ( sp <- [0..size(checkPositions[p])] ) {
+			initPosition = checkPositions[p][sp];
+			line1 = source[p][initPosition];
+			line2 = source[p][initPosition+1];
+			line3 = source[p][initPosition+2];
+			line4 = source[p][initPosition+3];
+			line5 = source[p][initPosition+4];
+			line6 = source[p][initPosition+5];
+			lines = line1 + line2 + line3 + line4 + line5 + line6;
+			lineList = lineList + [lines];
+			lines = "";
+		}
+	}
+	
+	// check whether the initial six lines (zeroth position) are duplicate with rest of list	
+	for ( l <- [1..size(lineList)] ) {
+		if ( lineList[0] == lineList[l] ) {
+			occurences += 6;
 		}
 	}
 	
@@ -153,7 +143,6 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, map[int,str] group)
 }
 
 // calculate the percentage of duplicates
-// todo: method to compare the map content
 public list[map[int,int]] pD(M3 model) {
 	
 	int percentageDuplicates = 0;
@@ -162,9 +151,9 @@ public list[map[int,int]] pD(M3 model) {
 	int occurences = 0;
 	map[int,int] occurenceMap = ();
 	list[map[int,int]] occurenceList = [];
-	map[int,str] compareMap = ();
+	list[list[int]] listPositions = [];
 	
-	//int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
+	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
 	//int possibleCheckAmount = totalLOC - (size(sourceLineMap) * 5); // each file means 5 less checks
 	
 	// for all sourcelines check number of occurences in code
@@ -182,15 +171,15 @@ public list[map[int,int]] pD(M3 model) {
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
 			if ( occurenceList[f][l] > 1 ) {
-				compareMap = ( 0:sourceLineMap[f][l]) + (1:sourceLineMap[f][l+1])
-				             + (2:sourceLineMap[f][l+2]) + (3:sourceLineMap[f][l+3])
-				             + (4:sourceLineMap[f][l+4]) + (5:sourceLineMap[f][l+5]);
-				duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, compareMap);
+				println("test");
+				
+				// create a list with the positions where the sourceline occurs
+				//listPositions = 
+				             
+				//duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, listPositions);
 			}
 		}
-	}	
-	
-	// start comparing sets of 6 sourcelines with the rest of the sourcecode
+	}
 	
 	//return percentageDuplicates;
 	return occurenceList;
