@@ -8,7 +8,6 @@ import lang::java::jdt::m3::Core;
 import softwareevolution::LinesOfCode;
 import softwareevolution::Duplication;
 import softwareevolution::UnitComplexity;
-import softwareevolution::UnitSize;
 import softwareevolution::CommentCleanup;
 
 /*
