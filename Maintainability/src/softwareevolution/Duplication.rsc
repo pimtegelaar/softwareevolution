@@ -6,64 +6,11 @@ import List;
 import String;
 import IO;
 import Map;
+import util::Math;
 import softwareevolution::CommentCleanup;
 
 /*
-** Get source information
-*/
-
-public str getFile(loc class) {
-	str fileSource = readFile(class);
-	fileSource = replaceAll(fileSource, "\t", "");
-	return fileSource;
-}
-
-public list[str] splitLines(str source) {
-	list[str] splittedLines = split("\r\n", source);
-	splittedLines = [ trim(s) | s <- splittedLines ];
-	return splittedLines;
-}
-
-/*
-** Check for duplicates in a sourcelist. 
-** Assumption: input does not contain tabs or leading/trailing whitespaces.
-** Problem: what is definition of duplicate? Code now probably identifies too much.
-*/
-
-public int amountDuplicates(list[str] sourceList) {
-	int checkAmount = size(sourceList) - 6; // Can't check when 5 or less rows are left
-	int fixedCheckAmount = size(sourceList) - 5; // The number of cases to compare the 6 lines against
-	int initStartPos = 0;
-	int initEndPos = 5;
-	int checkStartPos = 0;
-	int checkEndPos = 5;
-	int duplicateAmount = 0;
-	
-	while (checkAmount > 0) {  	  
-	  for (int n <- [0..fixedCheckAmount]) {		    	
-	  	if (initStartPos == checkStartPos) { 
-	  		checkStartPos += 1;
-	  		checkEndPos += 1;
-	  	}
-	  	
-	  	if (sourceList[initStartPos..initEndPos] == sourceList[checkStartPos..checkEndPos]) {
-	  		duplicateAmount += 1;
-	  	}  	
-	  	checkStartPos += 1;
-	    checkEndPos += 1;	  	
-	  }
-	  
-	  initStartPos += 1;
-	  initEndPos += 1;
-	  checkStartPos = 0;
-	  checkEndPos = 5;
-	  checkAmount -= 1;
-	}	
-	return duplicateAmount;
-}
-
-/*
-** Started working on the function to find duplicate code
+** Find duplicate code and calculate percentage of duplicate code
 ** Base is the map of sourcecode (without comments)
 ** Todo: - think of efficient method to compare
 **       - proper definition for duplicate?
@@ -87,12 +34,11 @@ public list[map[int,str]] mapSourceLines(M3 model) {
 	return sourceLineList;
 }
 
-// check how much a line occurs in a sourceLineList
+// check how much a line occurs in a sourceLineList, assumption is that source is a dence map
 public int checkLOCOccurence(list[map[int,str]] source, str line) {
 	
 	int occurences = 0;
-	
-	// assumption is that source is a dence map
+
 	for ( s <- [0..size(source)] ) {
 		for ( l <- [0..size(source[s])] ) {
 			if ( source[s][l] == line ) { occurences += 1; }
@@ -102,10 +48,11 @@ public int checkLOCOccurence(list[map[int,str]] source, str line) {
 	return occurences;
 }
 
-// check whether groups of 6 lines occur in a sourceLineList
+// check whether 6-line duplication exist for a specific line
 public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] checkPositions) {
 	
 	int occurences = 0;
+	int initPosition = 0;
 	str line1 = "";
 	str line2 = "";
 	str line3 = "";
@@ -114,7 +61,6 @@ public int checkGroupLOCOccurence(list[map[int,str]] source, list[list[int]] che
 	str line6 = "";
 	str lines = "";
 	list[str] lineList = [];	
-	int initPosition = 0;
 	
 	// create a linelist based on the check positions
 	for ( p <- [0..size(checkPositions)] ) {
@@ -168,15 +114,16 @@ public list[list[int]] createPositionList(list[map[int,str]] source, str line) {
 }
 
 // calculate the percentage of duplicates
-public int pD(M3 model) {
+public real pD(M3 model) {
 	
-	int percentageDuplicates = 0.;
+	real percentageDuplicates = 0.;
 	int duplicateLineAmount = 0;
 	list[map[int,str]] sourceLineMap = mapSourceLines(model);
 	int occurences = 0;
 	map[int,int] occurenceMap = ();
 	list[map[int,int]] occurenceList = [];
 	list[list[int]] listPositions = [];
+	list[str] listLinesProcessed = [];
 	
 	int totalLOC = (0 | it + size(sourceLineMap[l]) | int l <- [0..size(sourceLineMap)]);
 	
@@ -193,15 +140,19 @@ public int pD(M3 model) {
 	// only check for lines that occur more then once
 	for ( f <- [0..size(sourceLineMap)] ) {
 		for ( l <- [0..size(sourceLineMap[f])] ) {
-			if ( occurenceList[f][l] > 1 ) {										
-				listPositions = createPositionList(sourceLineMap, sourceLineMap[f][l]);
-				duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, listPositions);
-				listPositions = [];
+			if ( occurenceList[f][l] > 1 ) {												
+				// only check for lines that have not been processed
+				if ( sourceLineMap[f][l] in listLinesProcessed == false ) {
+					listPositions = createPositionList(sourceLineMap, sourceLineMap[f][l]);
+					duplicateLineAmount = duplicateLineAmount + checkGroupLOCOccurence(sourceLineMap, listPositions);
+					listLinesProcessed = listLinesProcessed + sourceLineMap[f][l];
+					listPositions = [];
+				}
 			}
 		}
 	}
 	
-	percentageDuplicates = 100 / totalLOC * duplicateLineAmount;
-	
+	percentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
+
 	return percentageDuplicates;
 }
