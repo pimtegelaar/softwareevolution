@@ -8,10 +8,11 @@ import lang::java::jdt::m3::Core;
 import softwareevolution::Replace;
 import softwareevolution::CommentCleanup;
 
-public int countLines(str sourcecode) {
-  int lineCount = (0 | it + 1 | /.+\r\n/ := sourcecode);
-  return lineCount;
-}
+/** 
+ * We start counting at 1, because the  last newline is not included in the method source.
+ * We only count lines that contain atleast one non-whitespace character.
+ */
+public int countCodeLines(str sourcecode) = (1 | it + 1 | /\S+.*\n/  := sourcecode);
 
 public str cleanUp(str sourcecode) {
   noTabsAndCarriageReturn = remove(remove(sourcecode, "\r"), "\t");
@@ -44,7 +45,7 @@ public map[loc,int] linesPerMethod(M3 model) {
       offset = method.offset;
       end = offset+method.length;
       methodSrc = substring(file, offset, end);
-      lpm[method]=countLines(methodSrc);
+      lpm[methodDeclaration] = countCodeLines(remove(remove(methodSrc, "\r"), "\t"));
     }
   }
   return lpm;
