@@ -64,4 +64,4 @@ public map[loc,int] ccPerMethod(M3 model) {
   return lpm;
 }
 
-public int countComplexity(str sourcecode) = (0 | it + 1 | /else if|if|else|\&\&|\|\||case|default/  := sourcecode);
+public int countComplexity(str sourcecode) = (0 | it + 1 | /else if|if|else|\&\&|\|\||case|default|catch/  := sourcecode);
