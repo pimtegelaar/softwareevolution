@@ -37,10 +37,10 @@ public map[loc,int] linesPerMethod(M3 model) {
   lpm = ();
   withoutComments = eraseComments(model);
   map[loc,loc] myMethods = (e.name:e.src | e <- model@declarations, isMethod(e.name));
-  for(classDeclaration <- {e | e <- model@declarations, isClass(e.name)}) {
-    for(methodDeclaration <- methods(model, classDeclaration.name)) {
+  for(parent <- {e | e <- model@declarations, isClass(e.name) || isInterface(e.name)}) {
+    for(methodDeclaration <- methods(model, parent.name)) {
       loc method = myMethods[methodDeclaration];
-      str fileLoc = classDeclaration.src.path;
+      str fileLoc = parent.src.path;
       str file = withoutComments[fileLoc];
       offset = method.offset;
       end = offset+method.length;
