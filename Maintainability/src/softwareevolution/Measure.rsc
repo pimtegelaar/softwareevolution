@@ -49,3 +49,15 @@ public str volumeRank(loc project) {
 	if (projectLOC > 1310000)                           { rank = "--"; }
 	return rank;
 }
+
+public str duplicationRank(loc project) {
+	M3 model = createM3FromEclipseProject(project);
+	real pD = percentageDuplicates(model);
+	str rank;
+	if (pD > 0 &&  pD <= 3)   { rank = "++"; }
+	if (pD > 3 &&  pD <= 5)   { rank = "+"; }
+	if (pD > 5 &&  pD <= 10)  { rank = "o"; }
+	if (pD > 10 && pD <= 20)  { rank = "-"; }
+	if (pD > 20 && pD <= 100) { rank = "--"; }
+	return rank;
+}

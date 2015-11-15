@@ -114,9 +114,10 @@ public list[list[int]] createPositionList(list[map[int,str]] source, str line) {
 }
 
 // calculate the percentage of duplicates
-public real pD(M3 model) {
+public int percentageDuplicates(M3 model) {
 	
-	real percentageDuplicates = 0.;
+	real realPercentageDuplicates = 0.;
+	int percentageDuplicates = 0;
 	int duplicateLineAmount = 0;
 	list[map[int,str]] sourceLineMap = mapSourceLines(model);
 	int occurences = 0;
@@ -152,7 +153,14 @@ public real pD(M3 model) {
 		}
 	}
 	
-	percentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
+	realPercentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
+	
+	if ( realPercentageDuplicates > 0 ) { 
+		percentageDuplicates = toInt(realPercentageDuplicates); 
+	}
+	else {
+		percentageDuplicates = 0;
+	}
 
 	return percentageDuplicates;
 }
