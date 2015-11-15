@@ -153,7 +153,6 @@ public int percentageDuplicates(M3 model) {
 	}
 	
 	realPercentageDuplicates = toReal(100) / toReal(totalLOC) * toReal(duplicateLineAmount);
-	println(duplicateLineAmount);
 	
 	if ( realPercentageDuplicates > 0 ) { 
 		percentageDuplicates = toInt(realPercentageDuplicates); 
