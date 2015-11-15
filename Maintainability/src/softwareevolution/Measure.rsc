@@ -73,9 +73,3 @@ public str duplicationRank(loc project) {
     return rank = "+";
   return "++";
 }
-
-public int countMethods(M3 model, loc class) {
-  list[loc] methods = [ e | e <- model@containment[class], e.scheme == "java+method"];
-  int methodCount = size(methods);
-  return methodCount;
-}
