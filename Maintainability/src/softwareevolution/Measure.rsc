@@ -89,6 +89,12 @@ private str endscore(str an, str ch, str st, str tst) =  r((r(an) + r(ch) + r(st
 
 public str volumeRank(loc project) {
 	projectLOC = linesProjectTotal(project);
+  println("===============================================");
+  println(" Lines of code");
+  println("===============================================");
+  println(" Total lines of code: <projectLOC>");
+  println("-----------------------------------------------");
+  println();
 	if (projectLOC > 1310000)
 	  return r(1);
 	if (projectLOC > 665000)
@@ -106,11 +112,12 @@ public str unitSizeRank(loc project) {
   println("===============================================");
   println(" Unit size");
   println("===============================================");
-  println(" Small:  <unitSize.small>");
-  println(" Moderate:  <unitSize.moderate>");
-  println(" Large:      <unitSize.large>");
-  println(" Huge: <unitSize.huge>");
+  println(" Small:    <unitSize.small>");
+  println(" Moderate: <unitSize.moderate>");
+  println(" Large:    <unitSize.large>");
+  println(" Huge:     <unitSize.huge>");
   println("-----------------------------------------------");
+  println();
   if (unitSize.moderate > 50 || unitSize.large > 15 || unitSize.huge > 5)  
     return r(1);
   if (unitSize.moderate > 40 || unitSize.large > 10 || unitSize.huge > 0)
@@ -127,11 +134,12 @@ public str unitComplexityRank(loc project) {
   println("===============================================");
   println(" Complexity");
   println("===============================================");
-  println(" Low:  <unitComplexity.low>");
+  println(" Low:       <unitComplexity.low>");
   println(" Moderate:  <unitComplexity.moderate>");
   println(" High:      <unitComplexity.high>");
   println(" Very high: <unitComplexity.veryhigh>");
   println("-----------------------------------------------");
+  println();
   if (unitComplexity.moderate > 50 || unitComplexity.high > 15 || unitComplexity.veryhigh > 5)  
     return r(1);
   if (unitComplexity.moderate > 40 || unitComplexity.high > 10 || unitComplexity.veryhigh > 0)
