@@ -59,16 +59,23 @@ public void measure(loc project) {
   ucr = unitComplexityRank(project);
   dr = duplicationRank(project);
   
+  an = analizability(vr,dr,usr);
+  ch = changeability(ucr,dr);
+  st = stability(usr);
+  tst = testability(ucr,usr);
+  
   str result =
   "                 -------------------------------------------------
   '                 | Volume | Complexity | Duplication | Unit size |
   '                 | <vr> |   <ucr>    |   <dr>    |    <usr>  |||
   ' -------------------------------------------------------------------------
-  ' | Analyzability |   X    |            |      X      |     X     | <analizability(vr,dr,usr)> ||
-  ' | Changeability |        |     X      |      X      |           | <changeability(ucr,dr)> ||
-  ' | Stability     |        |            |             |     X     | <stability(usr)> ||
-  ' | Testability   |        |     X      |             |     X     | <testability(ucr,usr)> ||
+  ' | Analyzability |   X    |            |      X      |     X     | <an> ||
+  ' | Changeability |        |     X      |      X      |           | <ch> ||
+  ' | Stability     |        |            |             |     X     | <st> ||
+  ' | Testability   |        |     X      |             |     X     | <tst> ||
   ' -------------------------------------------------------------------------
+  '                                              Maintainability:   | <endscore(an,ch,st,tst)> ||
+  '                                                                 ---------
   ";
   
   println(result);
@@ -78,7 +85,7 @@ private str analizability(str vr, str dr, str usr) = r((r(vr) + r(dr) + r(usr)) 
 private str changeability(str ucr, str dr) = r((r(ucr) + r(dr)) / 2);
 private str stability(str usr) = usr;
 private str testability(str ucr, str usr) = r((r(ucr) + r(usr)) / 2);
-
+private str endscore(str an, str ch, str st, str tst) =  r((r(an) + r(ch) + r(st) + r(tst)) / 4);
 
 public str volumeRank(loc project) {
 	projectLOC = linesProjectTotal(project);
