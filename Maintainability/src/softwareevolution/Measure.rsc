@@ -119,23 +119,24 @@ public str unitComplexityRank(loc project) {
   if (unitComplexity.moderate > 50 || unitComplexity.high > 15 || unitComplexity.veryhigh > 5)  
     return r(1);
   if (unitComplexity.moderate > 40 || unitComplexity.high > 10 || unitComplexity.veryhigh > 0)
-    return "-";
+    return r(2);
   if (unitComplexity.moderate > 30 || unitComplexity.high > 5)
-    return "o";
+    return r(3);
   if (unitComplexity.moderate > 25 || unitComplexity.high > 0)
-    return "+";
+    return r(4);
   return r(5);
 }
 
 public str duplicationRank(loc project) {
-	pD = percentageDuplicates(createM3FromEclipseProject(project));
-  if (pD > 20)
-    return r(1);
-  if (pD > 10)
-    return rank = r(2);
-  if (pD > 5)
-    return rank = r(3);
-  if (pD > 3)
-    return rank = r(4);
-  return r(5);
+return r(4);
+	//pD = percentageDuplicates(createM3FromEclipseProject(project));
+ // if (pD > 20)
+ //   return r(1);
+ // if (pD > 10)
+ //   return rank = r(2);
+ // if (pD > 5)
+ //   return rank = r(3);
+ // if (pD > 3)
+ //   return rank = r(4);
+ // return r(5);
 }
