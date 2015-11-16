@@ -54,9 +54,13 @@ public str r(int s) {
  */
  
 public void measure(loc project) {
-  vr = volumeRank(project);
-  usr = unitSizeRank(project);
-  ucr = unitComplexityRank(project);
+
+  model = createM3FromEclipseProject(project);
+  withoutComments = eraseComments(model);
+  
+  vr = volumeRank(model,withoutComments);
+  usr = unitSizeRank(model,withoutComments);
+  ucr = unitComplexityRank(model,withoutComments);
   dr = duplicationRank(project);
   
   an = analizability(vr,dr,usr);
@@ -87,8 +91,8 @@ private str stability(str usr) = usr;
 private str testability(str ucr, str usr) = r((r(ucr) + r(usr)) / 2);
 private str endscore(str an, str ch, str st, str tst) =  r((r(an) + r(ch) + r(st) + r(tst)) / 4);
 
-public str volumeRank(loc project) {
-	projectLOC = linesProjectTotal(project);
+public str volumeRank(M3 model,  map[str,str] withoutComments) {
+	projectLOC = linesProjectTotal(withoutComments);
   println("===============================================");
   println(" Lines of code");
   println("===============================================");
@@ -107,8 +111,8 @@ public str volumeRank(loc project) {
 }
 
 
-public str unitSizeRank(loc project) {
-  unitSize = determineUnitSize(project);
+public str unitSizeRank(M3 model,  map[str,str] withoutComments) {
+  unitSize = determineUnitSize(model,withoutComments);
   println("===============================================");
   println(" Unit size");
   println("===============================================");
@@ -129,8 +133,8 @@ public str unitSizeRank(loc project) {
   return r(5);
 }
 
-public str unitComplexityRank(loc project) {
-  unitComplexity = calcRiskComplexity(project);
+public str unitComplexityRank(M3 model,  map[str,str] withoutComments) {
+  unitComplexity = calcRiskComplexity(model, withoutComments);
   println("===============================================");
   println(" Complexity");
   println("===============================================");

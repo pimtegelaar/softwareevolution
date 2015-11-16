@@ -22,9 +22,10 @@ public str cleanUp(str sourcecode) {
   return noComments;
 }
 
-public map[str,int] linesPerFile(M3 model) {
+public map[str,int] linesPerFile(M3 model) = linesPerFile(eraseComments(model));
+
+public map[str,int] linesPerFile(map[str,str] withoutComments) {
   lpc = ();
-  withoutComments = eraseComments(model);
   for (cleanSource <- withoutComments) {
     src = withoutComments[cleanSource];
     lines = countCodeLines(remove(remove(src, "\r"), "\t"));
@@ -33,9 +34,12 @@ public map[str,int] linesPerFile(M3 model) {
   return lpc;
 }
 
-public map[loc,int] linesPerMethod(M3 model) {
+
+
+public map[loc,int] linesPerMethod(M3 model) = linesPerMethod(model, eraseComments(model));
+
+public map[loc,int] linesPerMethod(M3 model, map[str,str] withoutComments) {
   lpm = ();
-  withoutComments = eraseComments(model);
   map[loc,loc] myMethods = (e.name:e.src | e <- model@declarations, isMethod(e.name));
   for(parent <- {e | e <- model@declarations, isClass(e.name) || isInterface(e.name)}) {
     for(methodDeclaration <- methods(model, parent.name)) {
@@ -53,6 +57,7 @@ public map[loc,int] linesPerMethod(M3 model) {
   return lpm;
 }
 
-public int totalLines(M3 model) = (0 | it + subTotal | subTotal <- range(linesPerFile(model)));
-
-public int linesProjectTotal(loc project) = totalLines(createM3FromEclipseProject(project));
+public int linesProjectTotal(map[str,str] withoutComments) {
+  lpf = linesPerFile(withoutComments);
+  return (0 | it + subTotal | subTotal <- range(lpf));
+}

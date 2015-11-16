@@ -6,12 +6,18 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
 import softwareevolution::LinesOfCode;
+import softwareevolution::CommentCleanup;
 
 /*
 ** Get source information
 */
 public tuple[real small, real moderate, real large, real huge] determineUnitSize(loc project) {
-  map[loc,int] lpm = linesPerMethod(createM3FromEclipseProject(project));
+  model = createM3FromEclipseProject(project);
+  return determineUnitSize(model, eraseComments(model));
+}
+
+public tuple[real small, real moderate, real large, real huge] determineUnitSize(M3 model, map[str,str] withoutComments) {
+  map[loc,int] lpm = linesPerMethod(model, withoutComments);
   real small = 0.0;
   real moderate = 0.0;
   real large = 0.0;
