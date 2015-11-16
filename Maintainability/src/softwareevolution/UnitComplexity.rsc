@@ -17,12 +17,12 @@ public int calcUnitComplexity(loc method) {
 	return complexity;
 }
 
-public tuple[real moderate, real high, real veryhigh] calcRiskComplexity(loc project) {
+public tuple[real low, real moderate, real high, real veryhigh] calcRiskComplexity(loc project) {
 	int something = 0;
 	int unitComplexity = 0;
 	M3 model = createM3FromEclipseProject(project);
 	map[loc,int] ccpm = ccPerMethod(model);
-	real small = 0.0;
+	real low = 0.0;
 	real moderate = 0.0;
 	real high = 0.0;
 	real veryhigh = 0.0;
@@ -36,14 +36,15 @@ public tuple[real moderate, real high, real veryhigh] calcRiskComplexity(loc pro
 		else if(unitComplexity > 10)
 			moderate += 1;
 		else
-		  small += 1;	
+		  low += 1;	
 	}
-	total = small + moderate + high + veryhigh;
+	total = low + moderate + high + veryhigh;
+	real lowPercent = low / total * 100;
 	real moderatePercent = moderate / total * 100;
 	real highPercent = high / total * 100;
 	real veryhighPercent = veryhigh / total * 100;
 	
-	return <moderatePercent,highPercent,veryhighPercent>;;
+	return <lowPercent,moderatePercent,highPercent,veryhighPercent>;;
 }
 
 public map[loc,int] ccPerMethod(M3 model) {

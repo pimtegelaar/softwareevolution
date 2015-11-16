@@ -103,19 +103,35 @@ public str volumeRank(loc project) {
 
 public str unitSizeRank(loc project) {
   unitSize = determineUnitSize(project);
-  if (unitSize.moderate > 50 || unitSize.high > 15 || unitSize.veryhigh > 5)  
+  println("===============================================");
+  println(" Unit size");
+  println("===============================================");
+  println(" Small:  <unitSize.small>");
+  println(" Moderate:  <unitSize.moderate>");
+  println(" Large:      <unitSize.large>");
+  println(" Huge: <unitSize.huge>");
+  println("-----------------------------------------------");
+  if (unitSize.moderate > 50 || unitSize.large > 15 || unitSize.huge > 5)  
     return r(1);
-  if (unitSize.moderate > 40 || unitSize.high > 10 || unitSize.veryhigh > 0)
+  if (unitSize.moderate > 40 || unitSize.large > 10 || unitSize.huge > 0)
     return r(2);
-  if (unitSize.moderate > 30 || unitSize.high > 5)
+  if (unitSize.moderate > 30 || unitSize.large > 5)
     return r(3);
-  if (unitSize.moderate > 25 || unitSize.high > 0)
+  if (unitSize.moderate > 25 || unitSize.large > 0)
     return r(4);
   return r(5);
 }
 
 public str unitComplexityRank(loc project) {
   unitComplexity = calcRiskComplexity(project);
+  println("===============================================");
+  println(" Complexity");
+  println("===============================================");
+  println(" Low:  <unitComplexity.low>");
+  println(" Moderate:  <unitComplexity.moderate>");
+  println(" High:      <unitComplexity.high>");
+  println(" Very high: <unitComplexity.veryhigh>");
+  println("-----------------------------------------------");
   if (unitComplexity.moderate > 50 || unitComplexity.high > 15 || unitComplexity.veryhigh > 5)  
     return r(1);
   if (unitComplexity.moderate > 40 || unitComplexity.high > 10 || unitComplexity.veryhigh > 0)
