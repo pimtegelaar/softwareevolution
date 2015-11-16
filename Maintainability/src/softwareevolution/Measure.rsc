@@ -152,15 +152,21 @@ public str unitComplexityRank(loc project) {
 }
 
 public str duplicationRank(loc project) {
-return r(4);
 	//pD = percentageDuplicates(createM3FromEclipseProject(project));
- // if (pD > 20)
- //   return r(1);
- // if (pD > 10)
- //   return rank = r(2);
- // if (pD > 5)
- //   return rank = r(3);
- // if (pD > 3)
- //   return rank = r(4);
- // return r(5);
+	pD = 15;
+	println("===============================================");
+  println(" Duplication");
+  println("===============================================");
+  println(" Percentage of duplicates: <pD>");
+  println("-----------------------------------------------");
+  println();
+  if (pD > 20)
+    return r(1);
+  if (pD > 10)
+    return rank = r(2);
+  if (pD > 5)
+    return rank = r(3);
+  if (pD > 3)
+    return rank = r(4);
+  return r(5);
 }
