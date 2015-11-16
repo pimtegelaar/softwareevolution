@@ -8,15 +8,6 @@ import lang::java::jdt::m3::Core;
 import softwareevolution::Replace;
 import softwareevolution::CommentCleanup;
 
-/*
-** Calculate Unit Complexity
-*/
-
-public int calcUnitComplexity(loc method) {
-	int complexity = 1;
-	return complexity;
-}
-
 public tuple[real low, real moderate, real high, real veryhigh] calcRiskComplexity(loc project) {
 	int something = 0;
 	int unitComplexity = 0;
