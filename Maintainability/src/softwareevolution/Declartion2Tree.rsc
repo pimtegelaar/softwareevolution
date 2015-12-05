@@ -26,7 +26,7 @@ public Figure mapD2T(\enumConstant(str name, list[Expression] arguments, Declara
 public Figure mapD2T(\enumConstant(str name, list[Expression] arguments)) = t("enumConstant: "+name,"purple",[mapD2T(arg) | arg <- arguments]);
 public Figure mapD2T(\class(str name, list[Type] extends, list[Type] implements, list[Declaration] body)) = t("class: "+name,"purple",[mapD2T(e)|e<-extends]+[mapD2T(i)|i<-implements]+[mapD2T(b) | b <- body]);
 public Figure mapD2T(\class(list[Declaration] body)) = t("class","purple",[mapD2T(b) | b <- body]);
-public Figure mapD2T(\interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body)) = t("interface","purple");
+public Figure mapD2T(\interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body)) = t("interface","purple",[mapD2T(e)|e<-extends]+[mapD2T(i)|i<-implements]+[mapD2T(b) | b <- body]);
 public Figure mapD2T(\field(Type \type, list[Expression] fragments)) = t("field","purple",[mapD2T(\type)]+[mapD2T(f)|f<-fragments]);
 public Figure mapD2T(\initializer(Statement initializerBody)) = t("initializer","purple",[mapD2T(initializerBody)]);
 public Figure mapD2T(\method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl)) = t("method: "+name,"purple",[ mapD2T(param) | param <- parameters] + mapD2T(impl));
