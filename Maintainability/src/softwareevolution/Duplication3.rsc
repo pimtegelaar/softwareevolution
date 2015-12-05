@@ -5,6 +5,8 @@ import lang::java::jdt::m3::Core;
 import lang::java::m3::AST;
 
 import List;
+import ListRelation;
+import Set;
 import String;
 import IO;
 import Map;
@@ -53,9 +55,39 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public void getType1Clones(map[str,lrel[int,str]] duplicateLines) {
-	for (dupLine <- duplicateLines) {
-		println(dupLine);
-		println(duplicateLines[dupLine]);
+public lrel[int,str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+	
+	lrel[int,str] dupList = [];
+	list[lrel[str,int,int]] cloneList = [];
+	
+	// Group list by linenumber and file
+	map[str,list[int]] dupLinesPerFile = ();	
+	list[lrel[int,str]] lineList = toList(range(duplicateLines));
+	lrel[int,str] mergedLineList = [];
+	
+	for (subList <- lineList) {
+		for (listRel <- subList) {
+			tuple[int,str] locFile = listRel;
+			mergedLineList += locFile;
+		}
 	}
+	
+	dupLinesPerFile = ();
+	
+	// Through all duplicate source lines
+	for (srcLine <- duplicateLines) {
+		dupList = duplicateLines[srcLine];	
+		
+		//println(srcLine);
+		
+		// Through specific source line / source file
+		for (dupLine <- dupList) {
+			
+			cloneList = [];
+			//println(dupLine[1]);
+			
+		}
+	}
+	
+	return mergedLineList;
 }
