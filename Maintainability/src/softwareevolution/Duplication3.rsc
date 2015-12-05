@@ -53,6 +53,12 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
+public void getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+	for (dupLine <- duplicateLines) {
+		println(dupLine);
+	}
+}
+
 public Declaration transformAST(loc myMethod, M3 myModel) {
 	
 	Declaration methodAST = getMethodASTEclipse(myMethod, model=myModel);
