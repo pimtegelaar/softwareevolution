@@ -35,7 +35,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	      if (line != "") {
 	      	lrel[int,str] lineOccurences = [];
 	    	  
-	    	// append srcMap value to  if line already exists
+	    	// append srcMap value if line already exists
 	    	if (srcMap[line]?) {
 	    	  lineOccurences += srcMap[line];
 	    	}
@@ -48,7 +48,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	}
 	
 	// Map of sourcelines and occurences in list relations (line number/file)
-	duplicateLines = (line:srcMap[line] | line <- srcMap, size(srcMap[line]) > 1 && line != "{" && line != "}");
+	duplicateLines = (line:sort(srcMap[line]) | line <- srcMap, size(srcMap[line]) > 1 && line != "{" && line != "}"); 
 	
 	return duplicateLines;	
 }
@@ -56,16 +56,6 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 public void getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	for (dupLine <- duplicateLines) {
 		println(dupLine);
+		println(duplicateLines[dupLine]);
 	}
-}
-
-public Declaration transformAST(loc myMethod, M3 myModel) {
-	
-	Declaration methodAST = getMethodASTEclipse(myMethod, model=myModel);
-	
-	visit(methodAST) {
-		case \expressionStatement(_) => \case(\number("1"))
-	};
-	
-	return methodAST;	
 }
