@@ -55,13 +55,14 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public lrel[int,str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
 	lrel[int,str] dupList = [];
 	list[lrel[str,int,int]] cloneList = [];
 	
 	// Group list by linenumber and file
-	map[str,list[int]] dupLinesPerFile = ();	
+	map[str,set[int]] dupLinesPerFile = ();
+	map[str,list[int]] sortedDupLinesPerFile = ();	
 	list[lrel[int,str]] lineList = toList(range(duplicateLines));
 	lrel[int,str] mergedLineList = [];
 	
@@ -72,11 +73,15 @@ public lrel[int,str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 		}
 	}
 	
-	dupLinesPerFile = ();
+	dupLinesPerFile = index(invert(mergedLineList));
+	
+	for ( file <- dupLinesPerFile ) {
+		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
+	}
 	
 	// Through all duplicate source lines
 	for (srcLine <- duplicateLines) {
-		dupList = duplicateLines[srcLine];	
+		dupList = duplicateLines[srcLine];
 		
 		//println(srcLine);
 		
@@ -89,5 +94,5 @@ public lrel[int,str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 		}
 	}
 	
-	return mergedLineList;
+	return sortedDupLinesPerFile;
 }
