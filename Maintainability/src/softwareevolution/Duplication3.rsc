@@ -57,15 +57,9 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 
 public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
-	lrel[int,str] dupList = [];
-	list[lrel[str,int,int]] cloneList = [];
-	
-	// Group list by linenumber and file
-	map[str,set[int]] dupLinesPerFile = ();
-	map[str,list[int]] sortedDupLinesPerFile = ();	
+	// Put all listrelations in one list
 	list[lrel[int,str]] lineList = toList(range(duplicateLines));
 	lrel[int,str] mergedLineList = [];
-	
 	for (subList <- lineList) {
 		for (listRel <- subList) {
 			tuple[int,str] locFile = listRel;
@@ -73,26 +67,39 @@ public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) 
 		}
 	}
 	
+	// Group list by linenumber and file
+	map[str,set[int]] dupLinesPerFile = ();
 	dupLinesPerFile = index(invert(mergedLineList));
 	
+	// Sort LOCs
+	map[str,list[int]] sortedDupLinesPerFile = ();
 	for ( file <- dupLinesPerFile ) {
 		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
 	}
 	
+	// sortedDupLinesPerFile: per file the line numbers
+	// duplicateLines: per sourceline the line number / file name combination
+	lrel[int,str] dupList = [];
+	list[lrel[str,int,int]] cloneList = [];
 	// Through all duplicate source lines
 	for (srcLine <- duplicateLines) {
 		dupList = duplicateLines[srcLine];
 		
-		//println(srcLine);
-		
 		// Through specific source line / source file
 		for (dupLine <- dupList) {
 			
-			cloneList = [];
-			//println(dupLine[1]);
-			
+			// Get the other duplicate line numbers for current file name
+			list[int] dupLineNumbers = sortedDupLinesPerFile[dupLine[1]];
+			println(dupLineNumbers);
+			// Check whether preceeding or subsequent LOC exists
+			int dupLineIndex = indexOf(dupLineNumbers, dupLine[0]);
+			// Previous lines
+			if ( dupLineIndex != 0 && dupLineNumbers[dupLineIndex-1] == dupLine[0] - 1 ) {
+				println(dupLine[0]);
+				println("check");
+			}
 		}
 	}
 	
-	return sortedDupLinesPerFile;
+	return ("a":[1,2,3]);
 }
