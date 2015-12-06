@@ -77,6 +77,22 @@ public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) 
 		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
 	}
 	
+	// Index with file name / start line number / end line number
+	map[str, tuple[int,int]] enclosedLinesPerFile = ();
+	for ( file <- sortedDupLinesPerFile ) {
+		//println (sortedDupLinesPerFile[file]);
+		list[int] lineIndex = index(sortedDupLinesPerFile[file]);		
+		
+		//while ( x == y ) {
+		//
+		//}
+		
+		for ( lineNumber <- sortedDupLinesPerFile[file] ) {
+			println(lineNumber);
+		}
+
+	}
+	
 	// sortedDupLinesPerFile: per file the line numbers
 	// duplicateLines: per sourceline the line number / file name combination
 	lrel[int,str] dupList = [];
@@ -90,13 +106,54 @@ public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) 
 			
 			// Get the other duplicate line numbers for current file name
 			list[int] dupLineNumbers = sortedDupLinesPerFile[dupLine[1]];
-			println(dupLineNumbers);
-			// Check whether preceeding or subsequent LOC exists
+			
+			//println("specific");
+			//println(dupLine);
+			//println("general");
+			//println(dupList);
+			
+			// Preceeding or subsequent indexes
+			
+			//println(dupLineNumbers);
+			//println(dupLine);
+			//println(indexOf(dupLineNumbers, dupLine[0]));
+			
 			int dupLineIndex = indexOf(dupLineNumbers, dupLine[0]);
+			int decreaseLineIndex = dupLineIndex - 1;
+			int prevLine = 1;
+			int increaseLineIndex = dupLineIndex + 1;
+			int nextLine = 1;
+			bool prevLineExists = false;
+			bool nextLineExists = false;
+			
+			//println(srcLine);
+			//println(dupLineNumbers[decreaseLineIndex]);
+			//println(nextLineExists);
+			//println(dupLineNumbers[increaseLineIndex]);
+			
+			if (dupLineIndex != 0 && dupLineNumbers[decreaseLineIndex]?) {
+				prevLineExists = true;
+			}
+			
+			if (dupLineNumbers[increaseLineIndex]?) {
+				nextLineExists = true;
+			}
+			
+			if (prevLineExists == false && nextLineExists == false) {
+				println("isolated line");
+			}
+			
 			// Previous lines
-			if ( dupLineIndex != 0 && dupLineNumbers[dupLineIndex-1] == dupLine[0] - 1 ) {
-				println(dupLine[0]);
-				println("check");
+			while ( dupLineIndex != 0 && dupLineNumbers[decreaseLineIndex] == dupLine[0]-prevLine ) {
+				//println(dupLine[0]-prevLine);
+				//println(dupList);
+				
+				//for ( int n <- [0..size(dupList)] ) {
+				//	println(srcLine);
+				//}
+				
+				decreaseLineIndex -= 1;
+				prevLine += 1;
 			}
 		}
 	}
