@@ -28,16 +28,16 @@ public list[loc] sources(Declaration decl) {
 
     // Statements
     case a: \assert(_): result += a@src;
-    case a:  \assert(_,_): result += a@src;
-    case a:  \block(_): result += a@src;
-    case a:  \break(): result += a@src;
-    case a:  \break(_): result += a@src;
-    case a:  \continue(): result += a@src;
-    case a:  \continue(_): result += a@src;
-    case a:  \do(_,_): result += a@src;
-    case a:  \empty(): result += a@src;
-    case a:  \foreach(_,_,_): result += a@src;
-    case a:  \for(_,_,_): result += a@src;
+    case a: \assert(_,_): result += a@src;
+    case a: \block(_): result += a@src;
+    case a: \break(): result += a@src;
+    case a: \break(_): result += a@src;
+    case a: \continue(): result += a@src;
+    case a: \continue(_): result += a@src;
+    case a: \do(_,_): result += a@src;
+    case a: \empty(): result += a@src;
+    case a: \foreach(_,_,_): result += a@src;
+    case a: \for(_,_,_): result += a@src;
     case a: \for(_,_,_): result += a@src;
     case a: \if(_, _): result += a@src;
     case a: \if(_,_,_): result += a@src;
@@ -183,7 +183,7 @@ public str astToString(Declaration decl) {
     case \instanceof(Expression leftSide, Type rightSide): result += " instanceof";
     case \methodCall(bool isSuper, str name, list[Expression] arguments): result += " methodCall";
     case \methodCall(bool isSuper, Expression receiver, str name, list[Expression] arguments): result += " methodCall";
-    case \null(): result += " null";
+    case Expression::\null(): result += " null";
     case \number(str numberValue): result += " number";
     case \booleanLiteral(bool boolValue): result += " booleanLiteral";
     case \stringLiteral(str stringValue): result += " stringLiteral";
