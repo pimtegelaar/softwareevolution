@@ -1,5 +1,7 @@
 module softwareevolution::AstCloneDetection
 
+import Prelude;
+
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
@@ -9,42 +11,123 @@ import softwareevolution::Measure;
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
 
-public int countStatements(Declaration decl) {
-  int i = 0;
+public list[loc] sources2(Declaration decl) {
+  result = [];
   visit(decl) {
-    case \assert(_): i+=1;
-    case \assert(_,_): i+=1;
-    case \block(_): i+=1;
-    case \break(): i+=1;
-    case \break(_): i+=1;
-    case \continue(): i+=1;
-    case \continue(_): i+=1;
-    case \do(_,_): i+=1;
-    case \empty(): i+=1;
-    case \foreach(_,_,_): i+=1;
-    case \for(_,_,_): i+=1;
-    case \for(_,_,_): i+=1;
-    case \if(_, _): i+=1;
-    case \if(_,_,_): i+=1;
-    case \label(_,_): i+=1;
-    case \return(_): i+=1;
-    case \return(): i+=1;
-    case \switch(_,_): i+=1;
-    case \case(_): i+=1;
-    case \defaultCase(): i+=1;
-    case \synchronizedStatement(_,_): i+=1;
-    case \throw(_): i+=1;
-    case \try(_,_): i+=1;
-    case \try(_,_,_): i+=1;                       
-    case \catch(_,_): i+=1;
-    case \declarationStatement(_): i+=1;
-    case \while(_,_): i+=1;
-    case \expressionStatement(_): i+=1;
-    case \constructorCall(_,_,_): i+=1;
-    case \constructorCall(_,_): i+=1;
+    case a: Statement _: result+= a@src;
+    case a: Expression _: result+= a@src;
+    case a: Modifier _: result+= a@src;
+    //case a: Type _: result+= a@src;
+    //case a: Declaration _: result+= a@src;
   }
-  return i;
+  return result;
 }
+public list[loc] sources(Declaration decl) {
+  result = [];
+  visit(decl) {
+
+    // Statements
+    case a: \assert(_): result += a@src;
+    case a:  \assert(_,_): result += a@src;
+    case a:  \block(_): result += a@src;
+    case a:  \break(): result += a@src;
+    case a:  \break(_): result += a@src;
+    case a:  \continue(): result += a@src;
+    case a:  \continue(_): result += a@src;
+    case a:  \do(_,_): result += a@src;
+    case a:  \empty(): result += a@src;
+    case a:  \foreach(_,_,_): result += a@src;
+    case a:  \for(_,_,_): result += a@src;
+    case a: \for(_,_,_): result += a@src;
+    case a: \if(_, _): result += a@src;
+    case a: \if(_,_,_): result += a@src;
+    case a: \label(_,_): result += a@src;
+    case a: \return(_): result += a@src;
+    case a: \return(): result += a@src;
+    case a: \switch(_,_): result += a@src;
+    case a: \case(_): result += a@src;
+    case a: \defaultCase(): result += a@src;
+    case a: \synchronizedStatement(_,_): result += a@src;
+    case a: \throw(_): result += a@src;
+    case a: \try(_,_): result += a@src;
+    case a: \try(_,_,_): result += a@src;                       
+    case a: \catch(_,_): result += a@src;
+    case a: \declarationStatement(_): result += a@src;
+    case a: \while(_,_): result += a@src;
+    case a: \expressionStatement(_): result += a@src;
+    case a: \constructorCall(_,_,_): result += a@src;
+    case a: \constructorCall(_,_): result += a@src;
+    
+    // Expressions
+    case a: \arrayAccess(Expression array, Expression index): result += a@src;
+    case a: \newArray(Type \type, list[Expression] dimensions, Expression init): result += a@src;
+    case a: \newArray(Type \type, list[Expression] dimensions): result += a@src;
+    case a: \arrayInitializer(list[Expression] elements): result += a@src;
+    case a: \assignment(Expression lhs, str operator, Expression rhs): result += a@src;
+    case a: \cast(Type \type, Expression expression): result += a@src;
+    case a: \characterLiteral(str charValue): result += a@src;
+    case a: \newObject(Expression expr, Type \type, list[Expression] args, Declaration class): result += a@src;
+    case a: \newObject(Expression expr, Type \type, list[Expression] args): result += a@src;
+    case a: \newObject(Type \type, list[Expression] args, Declaration class): result += a@src;
+    case a: \newObject(Type \type, list[Expression] args): result += a@src;
+    case a: \qualifiedName(Expression qualifier, Expression expression): result += a@src;
+    case a: \conditional(Expression expression, Expression thenBranch, Expression elseBranch): result += a@src;
+    case a: \fieldAccess(bool isSuper, Expression expression, str name): result += a@src;
+    case a: \fieldAccess(bool isSuper, str name): result += a@src;
+    case a: \instanceof(Expression leftSide, Type rightSide): result += a@src;
+    case a: \methodCall(bool isSuper, str name, list[Expression] arguments): result += a@src;
+    case a: \methodCall(bool isSuper, Expression receiver, str name, list[Expression] arguments): result += a@src;
+    case a: \null(): result += a@src;
+    case a: \number(str numberValue): result += a@src;
+    case a: \booleanLiteral(bool boolValue): result += a@src;
+    case a: \stringLiteral(str stringValue): result += a@src;
+    case a: \type(Type \type): result += a@src;
+    case a: \variable(str name, int extraDimensions): result += a@src;
+    case a: \variable(str name, int extraDimensions, Expression \initializer): result += a@src;
+    case a: \bracket(Expression expression): result += a@src;
+    case a: \this(): result += a@src;
+    case a: \this(Expression thisExpression): result += a@src;
+    case a: \super(): result += a@src;
+    case a: \declarationExpression(Declaration decl): result += a@src;
+    case a: \infix(Expression lhs, str operator, Expression rhs): result += a@src;
+    case a: \postfix(Expression operand, str operator): result += a@src;
+    case a: \prefix(str operator, Expression operand): result += a@src;
+    case a: \simpleName(str name): result += a@src;
+    case a: \markerAnnotation(str typeName): result += a@src;
+    case a: \normalAnnotation(str typeName, list[Expression] memberValuePairs): result += a@src;
+    case a: \memberValuePair(str name, Expression \value)             : result += a@src;
+    case a: \singleMemberAnnotation(str typeName, Expression \value): result += a@src;
+    
+    // Declarations
+    case a: \compilationUnit(list[Declaration] imports, list[Declaration] types): result += a@src;
+    case a: \compilationUnit(Declaration package, list[Declaration] imports, list[Declaration] types): result += a@src;
+    case a: \enum(str name, list[Type] implements, list[Declaration] constants, list[Declaration] body): result += a@src;
+    case a: \enumConstant(str name, list[Expression] arguments, Declaration class): result += a@src;
+    case a: \enumConstant(str name, list[Expression] arguments): result += a@src;
+    case a: \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body): result += a@src;
+    case a: \class(list[Declaration] body): result += a@src;
+    case a: \interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body): result += a@src;
+    case a: \field(Type \type, list[Expression] fragments): result += a@src;
+    case a: \initializer(Statement initializerBody): result += a@src;
+    case a: \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl): result += a@src;
+    case a: \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions): result += a@src;
+    case a: \constructor(str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl): result += a@src;
+    case a: \import(str name): result += a@src;
+    case a: \package(str name): result += a@src;
+    case a: \package(Declaration parentPackage, str name): result += a@src;
+    //case a: \variables(Type \type, list[Expression] \fragments): result += a@src;
+    case a: \typeParameter(str name, list[Type] extendsList): result += a@src;
+    case a: \annotationType(str name, list[Declaration] body): result += a@src;
+    case a: \annotationTypeMember(Type \type, str name): result += a@src;
+    case a: \annotationTypeMember(Type \type, str name, Expression defaultBlock): result += a@src;
+    case a: \parameter(Type \type, str name, int extraDimensions): result += a@src;
+    case a: \vararg(Type \type, str name): result += a@src;
+  }
+  return result;
+}
+
+public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
+
 
 public str astToString(Declaration decl) {
   str result = "";
