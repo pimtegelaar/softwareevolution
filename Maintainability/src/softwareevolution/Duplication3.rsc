@@ -55,14 +55,14 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public map[str, tuple[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
 	// Put all listrelations in one list
-	list[lrel[int,str]] lineList = toList(range(duplicateLines));
+	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
 	lrel[int,str] mergedLineList = [];
-	for (subList <- lineList) {
-		for (listRel <- subList) {
-			tuple[int,str] locFile = listRel;
+	for (subDubList <- dupLineList) {
+		for (listRelDub <- subDubList) {
+			tuple[int,str] locFile = listRelDub;
 			mergedLineList += locFile;
 		}
 	}
@@ -80,18 +80,47 @@ public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) 
 	// Index with file name / start line number / end line number
 	map[str, tuple[int,int]] enclosedLinesPerFile = ();
 	for ( file <- sortedDupLinesPerFile ) {
-		//println (sortedDupLinesPerFile[file]);
-		list[int] lineIndex = index(sortedDupLinesPerFile[file]);		
 		
-		//while ( x == y ) {
-		//
-		//}
+		list[int] lineValues = sortedDupLinesPerFile[file];
+		list[int] lineIndexes = index(sortedDupLinesPerFile[file]);
+		list[list[int]] groupLineList = [];
+		list[int] subLineList = [];
+		int lineIndex = size(lineIndexes);
+		int currLineIndex = 0;
 		
-		for ( lineNumber <- sortedDupLinesPerFile[file] ) {
-			println(lineNumber);
+		//println(file);
+		//println(lineValues);
+		//println(lineIndexes);
+		
+		// Create list with sublists of sequencing line numbers
+		while ( currLineIndex < lineIndex ) {
+			if (size(subLineList) == 0 ) { 
+				subLineList = [lineValues[currLineIndex]];
+			}
+			else {
+				int currValue = lineValues[currLineIndex];
+				int lastValue = subLineList[size(subLineList)-1];
+				if ( currValue - lastValue != 1 ) {
+					groupLineList = groupLineList + [subLineList];
+					subLineList = [];
+					subLineList = [currValue];
+				}
+				else { subLineList = subLineList + currValue; }
+			}
+			currLineIndex += 1;
+		}		
+		groupLineList = groupLineList + [subLineList];
+		
+		//println("group");
+		//println(groupLineList);
+		
+		// Create list with start- and end line numbers
+		for ( fileLineNumbers <- groupLineList ) {
+			enclosedLinesPerFile = enclosedLinesPerFile + (file:<fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>);
 		}
-
 	}
+	
+	//println(enclosedLinesPerFile);
 	
 	// sortedDupLinesPerFile: per file the line numbers
 	// duplicateLines: per sourceline the line number / file name combination
@@ -158,5 +187,5 @@ public map[str,list[int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) 
 		}
 	}
 	
-	return ("a":[1,2,3]);
+	return (enclosedLinesPerFile);
 }
