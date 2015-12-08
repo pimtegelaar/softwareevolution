@@ -55,7 +55,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public map[str, tuple[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
 	// Put all listrelations in one list
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
@@ -76,9 +76,9 @@ public map[str, tuple[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateL
 	for ( file <- dupLinesPerFile ) {
 		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
 	}
-	
-	// Index with file name / start line number / end line number
-	map[str, tuple[int,int]] enclosedLinesPerFile = ();
+
+    // Structures for creating index with file name / start line numbers / end line numbers
+	map[str, lrel[int,int]] enclosedLinesPerFile = ();
 	for ( file <- sortedDupLinesPerFile ) {
 		
 		list[int] lineValues = sortedDupLinesPerFile[file];
@@ -111,13 +111,16 @@ public map[str, tuple[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateL
 		}		
 		groupLineList = groupLineList + [subLineList];
 		
-		//println("group");
-		//println(groupLineList);
-		
+		println("group");
+		println(groupLineList);
+
 		// Create list with start- and end line numbers
+		lrel[int,int] dupLineRel = [];
 		for ( fileLineNumbers <- groupLineList ) {
-			enclosedLinesPerFile = enclosedLinesPerFile + (file:<fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>);
+			dupLineRel = dupLineRel + <fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>;
 		}
+		enclosedLinesPerFile = enclosedLinesPerFile + (file:dupLineRel);
+		dupLineRel = [];
 	}
 	
 	//println(enclosedLinesPerFile);
