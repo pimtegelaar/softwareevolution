@@ -55,7 +55,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public map[tuple[int,str],str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
 	// Put all listrelations in one list
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
@@ -67,6 +67,8 @@ public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 		}
 	}
 	
+	//println(mergedLineList);
+	
 	// Group list by linenumber and file
 	map[str,set[int]] dupLinesPerFile = ();
 	dupLinesPerFile = index(invert(mergedLineList));
@@ -77,8 +79,10 @@ public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
 	}
 
+    //println(sortedDupLinesPerFile);
+
     // Structures for creating index with file name / start line numbers / end line numbers
-	map[str, lrel[int,int]] enclosedLinesPerFile = ();
+	map[str,lrel[int,int]] enclosedLinesPerFile = ();
 	for ( file <- sortedDupLinesPerFile ) {
 		
 		list[int] lineValues = sortedDupLinesPerFile[file];
@@ -111,8 +115,8 @@ public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 		}		
 		groupLineList = groupLineList + [subLineList];
 		
-		println("group");
-		println(groupLineList);
+		//println("group");
+		//println(groupLineList);
 
 		// Create list with start- and end line numbers
 		lrel[int,int] dupLineRel = [];
@@ -125,70 +129,23 @@ public map[str, lrel[int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 	
 	//println(enclosedLinesPerFile);
 	
-	// sortedDupLinesPerFile: per file the line numbers
-	// duplicateLines: per sourceline the line number / file name combination
-	lrel[int,str] dupList = [];
-	list[lrel[str,int,int]] cloneList = [];
-	// Through all duplicate source lines
-	for (srcLine <- duplicateLines) {
-		dupList = duplicateLines[srcLine];
-		
-		// Through specific source line / source file
-		for (dupLine <- dupList) {
-			
-			// Get the other duplicate line numbers for current file name
-			list[int] dupLineNumbers = sortedDupLinesPerFile[dupLine[1]];
-			
-			//println("specific");
-			//println(dupLine);
-			//println("general");
-			//println(dupList);
-			
-			// Preceeding or subsequent indexes
-			
-			//println(dupLineNumbers);
-			//println(dupLine);
-			//println(indexOf(dupLineNumbers, dupLine[0]));
-			
-			int dupLineIndex = indexOf(dupLineNumbers, dupLine[0]);
-			int decreaseLineIndex = dupLineIndex - 1;
-			int prevLine = 1;
-			int increaseLineIndex = dupLineIndex + 1;
-			int nextLine = 1;
-			bool prevLineExists = false;
-			bool nextLineExists = false;
-			
-			//println(srcLine);
-			//println(dupLineNumbers[decreaseLineIndex]);
-			//println(nextLineExists);
-			//println(dupLineNumbers[increaseLineIndex]);
-			
-			if (dupLineIndex != 0 && dupLineNumbers[decreaseLineIndex]?) {
-				prevLineExists = true;
-			}
-			
-			if (dupLineNumbers[increaseLineIndex]?) {
-				nextLineExists = true;
-			}
-			
-			if (prevLineExists == false && nextLineExists == false) {
-				println("isolated line");
-			}
-			
-			// Previous lines
-			while ( dupLineIndex != 0 && dupLineNumbers[decreaseLineIndex] == dupLine[0]-prevLine ) {
-				//println(dupLine[0]-prevLine);
-				//println(dupList);
-				
-				//for ( int n <- [0..size(dupList)] ) {
-				//	println(srcLine);
-				//}
-				
-				decreaseLineIndex -= 1;
-				prevLine += 1;
-			}
+	// Create a flat source map, to lookup the relevant source lines
+	map[tuple[int,str],str] sourceLookupMap = ();
+	for (dupLineReferences <- duplicateLines ) {
+		for ( dupLineReference <- duplicateLines[dupLineReferences] ) {
+			sourceLookupMap = sourceLookupMap + (dupLineReference:dupLineReferences);
 		}
 	}
 	
-	return (enclosedLinesPerFile);
+	//println(sourceLookupMap);
+	
+	// Start looking for clones, from file perspective...
+	list[lrel[str,int,int]] cloneList = [];
+	for ( file <- enclosedLinesPerFile ) {
+		println(file);
+	}
+	
+	// Cleanup duplicate clone references
+	
+	return (());
 }
