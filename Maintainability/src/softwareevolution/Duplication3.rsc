@@ -28,7 +28,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 		srcLOCs = srcNoComments[srcKey];
 		srcClean = replaceAll(replaceAll(srcLOCs, "\r", ""), "\t", "");
 		srcLines = split("\n", srcClean);
-		srcLines = [ trim(line) | line <- srcLines ];
+		//srcLines = [ trim(line) | line <- srcLines ];
 		int i = 0;
 		
 	    // Through source lines
@@ -55,7 +55,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public map[tuple[int,str],str] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
 	
 	// Put all listrelations in one list
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
@@ -142,10 +142,30 @@ public map[tuple[int,str],str] getType1Clones(map[str,lrel[int,str]] duplicateLi
 	// Start looking for clones, from file perspective...
 	list[lrel[str,int,int]] cloneList = [];
 	for ( file <- enclosedLinesPerFile ) {
-		println(file);
+		// For each enclosed group determine the source lines for current file
+		for ( enclosedLines <- enclosedLinesPerFile[file] ) {
+			int amountLines = enclosedLines[1] - enclosedLines[0] + 1;
+			int lineIterator = 0;
+			
+			// Situation when it concerns an isolated LOC duplicate
+			if ( amountLines == 1 ) {
+				str singleSourceLine = sourceLookupMap[<enclosedLines[0],file>];
+				// Go through duplicates lines in other files
+				for ( duplicateLine <- duplicateLines[singleSourceLine] ) {
+					// When source line is the same, we have a single row clone
+					if  ( singleSourceLine == sourceLookupMap[duplicateLine] 
+					   && duplicateLine[1] != file
+					    ) {
+						cloneList = cloneList + [[ <file, enclosedLines[1], enclosedLines[1]>
+						                         , <duplicateLine[1], duplicateLine[0], duplicateLine[0]>
+						                        ]];
+					}
+				}
+			}
+		}
 	}
 	
 	// Cleanup duplicate clone references
 	
-	return (());
+	return (cloneList);
 }
