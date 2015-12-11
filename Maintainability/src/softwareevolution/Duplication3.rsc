@@ -215,41 +215,96 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 			if ( amountLines >= minCloneSize ) {
 				
 				// Orginal enclosed source lines in a list
-				list[str] orgSrcLines = [];
+				list[tuple[int,str]] orgSrcLines = [];
 				for ( lineNo <- [enclosedLines[0]..enclosedLines[1] + 1] ) {
-					orgSrcLines = orgSrcLines + sourceLookupMap[<lineNo,file>];					
+					orgSrcLines = orgSrcLines + <lineNo,sourceLookupMap[<lineNo,file>]>;					
 				}
 				
-				//println("file");
-				//println(file);
+				println("file");
+				println(file);
 				//println("original line numbers");
 				//println(enclosedLines);
-				//println("original source lines");
-				//println(orgSrcLines);
+				println("original source lines");
+				println(orgSrcLines);
 				
-				// List of enclosed lines in other files with matching source lines
+				// List of enclosed lines in all files with matching source lines
 				map[str,lrel[int,int]] possibleClonedLines = ();
 				for ( orgSrcLine <- orgSrcLines ) {
-					lrel [int,str] dupLines = duplicateLines[orgSrcLine];					
-					// Check references in other files 
+					lrel [int,str] dupLines = duplicateLines[orgSrcLine[1]];					
+					// Check all references in files 
 					for ( dupLine <- dupLines ) {
 						tuple[int,int] currLines = enclosedLookupMap[dupLine];
 						list[int] refLines = [currLines[0],currLines[1]];
 						list[int] allRefLines = [];
-						// Create a list with references that must be checked
-						if ( possibleClonedLines[dupLine[1]]? ) {
-							allRefLines = carrier(possibleClonedLines[dupLine[1]]);
-							// If it is already in the list, add it, otherwise set initial value
-							if ( refLines <= allRefLines == false ) { 
-								possibleClonedLines[dupLine[1]] += [currLines];
+						// Create a list with references that must be checked, exclude original refs
+						if ( currLines != <enclosedLines[0],enclosedLines[1]> ) {						
+							// Merge if value is already in list, otherwise set to initial value
+							if ( possibleClonedLines[dupLine[1]]? ) {
+								allRefLines = carrier(possibleClonedLines[dupLine[1]]);
+								// If it is already in the list, add it
+								if ( refLines <= allRefLines == false ) { 
+									possibleClonedLines[dupLine[1]] += [currLines];
+								}
 							}
+							else { possibleClonedLines[dupLine[1]] = [currLines]; }
 						}
-						else { possibleClonedLines[dupLine[1]] = [currLines]; }
 					}
 				}
+
+				println("possible clones");
+				println(possibleClonedLines);
 				
-				//println("possible clones");
-				//println(possibleClonedLines);
+				// Check all reference lines against the current line list
+				list[tuple[int,str]] refSrcLines = [];
+				for ( possibleClonesFile <- possibleClonedLines ) {
+					for ( checkLines <- possibleClonedLines[possibleClonesFile] ) {
+						// Check the reference source lines
+						for ( lineNo <- [checkLines[0]..checkLines[1] + 1] ) {
+							refSrcLines += <lineNo,sourceLookupMap[<lineNo,possibleClonesFile>]>;
+						}
+
+						//println("org file");
+						//println(file);
+						//println("ref file");
+						//println(possibleClonesFile);
+						println("ref list");
+						println(refSrcLines);
+						
+						
+						// Try to match the referenced lines with the original lines
+						for ( refSrcLine <- refSrcLines ) {
+							// Is referenced line part of original lines?
+							if ( [refSrcLine[1]] <= range(orgSrcLines) ) {
+								for ( orgSrcLine <- orgSrcLines ) {
+									if (orgSrcLine[1] == refSrcLine[1]) {
+										int startOrgLineNo = orgSrcLine[0];
+										int startRefLineNo = refSrcLine[0];
+										//println("start org line no");
+										//println(startOrgLineNo);
+										//println("start ref line no");
+										//println(startRefLineNo);
+										int cloneLineAmount = 1;
+										// Try to detect largest clone possible
+										while ( cloneLineAmount < minCloneSize ) {
+											//int nextOrgLineNo = orgSrcLine[0] + cloneLineAmount;
+											//int nextRefLineNo = refSrcLine[0] + cloneLineAmount;
+											//str nextOrgSrcLine = sourceLookupMap[<nextOrgLineNo,file>];
+											//str nextRefSrcLine = sourceLookupMap[<nextRefLineNo,possibleClonesFile>];
+											//println("next org line no");
+											//println(nextOrgLineNo);
+											//println("next ref line no");
+											//println(nextRefLineNo);
+											cloneLineAmount += 1;
+											break;
+										}										
+									}
+								}
+							}
+						}
+						
+						refSrcLines = [];						
+					}
+				}
 			}
 			
 			// Single line clones
