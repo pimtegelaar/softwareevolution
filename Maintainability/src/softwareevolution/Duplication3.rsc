@@ -68,7 +68,7 @@ public map[str,str] replaceComments(M3 model, str replaceCommentWith) {
   return newSource;
 }
 
-public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
+private map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	
 	// Get map of source without comments
 	map[str,str] srcNoComments = replaceComments(model," ");
@@ -109,9 +109,8 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines, int minCloneSize) {
-	
-	// Put all listrelations in one list
+// Put all duplicates listrelations in one list
+private lrel[int,str] mergeLines(map[str,lrel[int,str]] duplicateLines) {
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
 	lrel[int,str] mergedLineList = [];
 	for (subDubList <- dupLineList) {
@@ -119,38 +118,41 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 			tuple[int,str] locFile = listRelDub;
 			mergedLineList += locFile;
 		}
-	}
-	
-	//println(mergedLineList);
-	
+	}	
+	return mergedLineList;
+}
+
+// Generate map with sorted list of line numbers from duplicate lines
+private map[str,list[int]] sortDupLinesPerFile(lrel[int,str] lineList) {
 	// Group list by linenumber and file
 	map[str,set[int]] dupLinesPerFile = ();
-	dupLinesPerFile = index(invert(mergedLineList));
+	dupLinesPerFile = index(invert(lineList));
 	
 	// Sort LOCs
 	map[str,list[int]] sortedDupLinesPerFile = ();
 	for ( file <- dupLinesPerFile ) {
 		sortedDupLinesPerFile += (file:sort(dupLinesPerFile[file]));
 	}
+	
+	return sortedDupLinesPerFile;
+}
 
-    //println(sortedDupLinesPerFile);
-
-    // Structures for creating index with file name / start line numbers / end line numbers
+// Generate map by file name with enclosed start line numbers / end line numbers
+private map[str,lrel[int,int]] getEnclosedLinesPerFile(map[str,list[int]] sortedDupLines) {
 	map[str,lrel[int,int]] enclosedLinesPerFile = ();
-	for ( file <- sortedDupLinesPerFile ) {
-		
-		list[int] lineValues = sortedDupLinesPerFile[file];
-		list[int] lineIndexes = index(sortedDupLinesPerFile[file]);
-		list[list[int]] groupLineList = [];
-		list[int] subLineList = [];
-		int lineIndex = size(lineIndexes);
+	for ( file <- sortedDupLines ) {	
+		list[int] lineValues = sortedDupLines[file];
+		list[int] lineIndexes = index(sortedDupLines[file]);
 		int currLineIndex = 0;
+		int lineIndex = size(lineIndexes);
 		
 		//println(file);
 		//println(lineValues);
 		//println(lineIndexes);
 		
 		// Create list with sublists of sequencing line numbers
+		list[int] subLineList = [];
+		list[list[int]] groupLineList = [];
 		while ( currLineIndex < lineIndex ) {
 			if (size(subLineList) == 0 ) { 
 				subLineList = [lineValues[currLineIndex]];
@@ -159,37 +161,48 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 				int currValue = lineValues[currLineIndex];
 				int lastValue = subLineList[size(subLineList)-1];
 				if ( currValue - lastValue != 1 ) {
-					groupLineList = groupLineList + [subLineList];
+					groupLineList += [subLineList];
 					subLineList = [];
 					subLineList = [currValue];
 				}
-				else { subLineList = subLineList + currValue; }
+				else { subLineList += currValue; }
 			}
 			currLineIndex += 1;
 		}		
-		groupLineList = groupLineList + [subLineList];
+		groupLineList += [subLineList];
 		
 		//println("group");
 		//println(groupLineList);
 
-		// Create list with start- and end line numbers
+		// Create the list with start- and end line numbers
 		lrel[int,int] dupLineRel = [];
-
 		for ( fileLineNumbers <- groupLineList ) {
-			dupLineRel = dupLineRel + <fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>;
+			dupLineRel += <fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>;
 		}
-		enclosedLinesPerFile = enclosedLinesPerFile + (file:dupLineRel);
+		enclosedLinesPerFile += (file:dupLineRel);
 		dupLineRel = [];
 	}
+	return enclosedLinesPerFile;
+}
+
+public list[lrel[str,int,int]] getType1Clones(M3 model, int minCloneSize) {
 	
-	//println(enclosedLinesPerFile);
+	map[str,lrel[int,str]] srcDuplicates = getSourceDuplicates(model);
+	lrel[int,str] mergedLineList = mergeLines(srcDuplicates);
+	//println(mergedLineList);
+	
+	map[str,list[int]] sortedDupLinesPerFile = sortDupLinesPerFile(mergedLineList);
+    //println(sortedDupLinesPerFile);
+
+	map[str,lrel[int,int]] enclosedLinesPerFile = getEnclosedLinesPerFile(sortedDupLinesPerFile);
+	println(enclosedLinesPerFile);
 	
 	// Create flat source maps, to lookup the relevant source lines
 	map[tuple[int,str],str] sourceLookupMap = ();
 	map[tuple[int,str],tuple[int,int]] enclosedLookupMap = ();
 	
-	for (dupLineReferences <- duplicateLines ) {
-		for ( dupLineReference <- duplicateLines[dupLineReferences] ) {
+	for (dupLineReferences <- srcDuplicates ) {
+		for ( dupLineReference <- srcDuplicates[dupLineReferences] ) {
 			sourceLookupMap = sourceLookupMap + (dupLineReference:dupLineReferences);
 			int currLine = dupLineReference[0];
 			for ( subLines <- enclosedLinesPerFile[dupLineReference[1]] ) {
@@ -220,17 +233,17 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 					orgSrcLines = orgSrcLines + <lineNo,sourceLookupMap[<lineNo,file>]>;					
 				}
 				
-				println("file");
-				println(file);
+				//println("file");
+				//println(file);
 				//println("original line numbers");
 				//println(enclosedLines);
-				println("original source lines");
-				println(orgSrcLines);
+				//println("original source lines");
+				//println(orgSrcLines);
 				
 				// List of enclosed lines in all files with matching source lines
 				map[str,lrel[int,int]] possibleClonedLines = ();
 				for ( orgSrcLine <- orgSrcLines ) {
-					lrel [int,str] dupLines = duplicateLines[orgSrcLine[1]];					
+					lrel [int,str] dupLines = srcDuplicates[orgSrcLine[1]];					
 					// Check all references in files 
 					for ( dupLine <- dupLines ) {
 						tuple[int,int] currLines = enclosedLookupMap[dupLine];
@@ -251,8 +264,8 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 					}
 				}
 
-				println("possible clones");
-				println(possibleClonedLines);
+				//println("possible clones");
+				//println(possibleClonedLines);
 				
 				// Check all reference lines against the current line list
 				list[tuple[int,str]] refSrcLines = [];
@@ -267,9 +280,8 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 						//println(file);
 						//println("ref file");
 						//println(possibleClonesFile);
-						println("ref list");
-						println(refSrcLines);
-						
+						//println("ref list");
+						//println(refSrcLines);
 						
 						// Try to match the referenced lines with the original lines
 						for ( refSrcLine <- refSrcLines ) {
