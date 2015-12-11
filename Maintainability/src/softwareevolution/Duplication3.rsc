@@ -14,10 +14,70 @@ import util::Math;
 
 import softwareevolution::CommentCleanup;
 
+/** Remove comments and generate map of sourcelines */
+public map[str,str] replaceComments(M3 model, str replaceCommentWith) {
+  
+  list[loc] comments = getComments(model);
+  map[str,str] newSource = ();
+  list[str] splittedSource = [];
+  str mergedSource = "";
+  
+  for (c <- files(model)) {
+    source = readFile(c);
+    source = replaceAll(source, "\r\n", "\n");
+    splittedSource = split("\n", source);
+    for (comment <- comments) {
+      if (c.path == comment.path) {    
+		  
+		  // singleline comments
+		  if (comment.begin.line == comment.end.line) {
+		    beginLine = comment.begin.line - 1;
+		    beginColumn = comment.begin.column;
+		    endColumn = comment.end.column;
+		    currentLine = splittedSource[beginLine];
+		    replaceComment = substring(currentLine, beginColumn, endColumn);
+		    splittedSource[beginLine] = replaceFirst(splittedSource[beginLine],replaceComment,replaceCommentWith);
+		  }
+  
+		  // multiline comments
+		  if (comment.begin.line != comment.end.line) {
+		    beginLine = comment.begin.line - 1;
+		    endLine = comment.end.line - 1;
+		    beginColumn = comment.begin.column;
+		    endColumn = comment.end.column;
+		    for (l <- [beginLine..endLine + 1]) {                   
+		      // replace beginline
+		      if ( l == beginLine ) {
+		        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
+		      }
+		      // replace lines in between
+		      if ( l != beginLine && l != endLine ) { 
+		        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
+		      }
+		      // replace endline
+		      if ( l == endLine ) { 
+		        replaceComment = substring(splittedSource[l], 0, endColumn);
+		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
+		      }
+		    }
+		  }
+      }
+    }
+    
+    for (s <- splittedSource) { mergedSource = mergedSource + "\n" + s; }
+    mergedSource = replaceFirst(mergedSource, "\n", "");
+    newSource = newSource + (c.path:mergedSource);
+    mergedSource = "";  
+  }
+  return newSource;
+}
+
 public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	
 	// Get map of source without comments
-	map[str,str] srcNoComments = eraseComments(model);
+	map[str,str] srcNoComments = replaceComments(model," ");
 	
 	int totalLines = 0;
 	map[str,lrel[int,str]] srcMap = ();
@@ -26,9 +86,9 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	// Through all sources
 	for (srcKey <- srcNoComments) {
 		srcLOCs = srcNoComments[srcKey];
-		srcClean = replaceAll(replaceAll(srcLOCs, "\r", ""), "\t", "");
+		srcClean = replaceAll(srcLOCs, "\t", "");
 		srcLines = split("\n", srcClean);
-		//srcLines = [ trim(line) | line <- srcLines ];
+		srcLines = [ trim(line) | line <- srcLines ];
 		int i = 0;
 		
 	    // Through source lines
