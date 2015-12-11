@@ -2,7 +2,6 @@ module softwareevolution::Duplication3
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
-import lang::java::m3::AST;
 
 import List;
 import ListRelation;
@@ -12,12 +11,10 @@ import IO;
 import Map;
 import util::Math;
 
-import softwareevolution::CommentCleanup;
-
 /** Remove comments and generate map of sourcelines */
 public map[str,str] replaceComments(M3 model, str replaceCommentWith) {
   
-  list[loc] comments = getComments(model);
+  list[loc] comments = [e | <_,e> <- model@documentation];
   map[str,str] newSource = ();
   list[str] splittedSource = [];
   str mergedSource = "";
@@ -46,17 +43,14 @@ public map[str,str] replaceComments(M3 model, str replaceCommentWith) {
 		    beginColumn = comment.begin.column;
 		    endColumn = comment.end.column;
 		    for (l <- [beginLine..endLine + 1]) {                   
-		      // replace beginline
 		      if ( l == beginLine ) {
 		        replaceComment = substring(splittedSource[l], beginColumn, size(splittedSource[l]));
 		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
 		      }
-		      // replace lines in between
 		      if ( l != beginLine && l != endLine ) { 
 		        replaceComment = substring(splittedSource[l], 0, size(splittedSource[l]));
 		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
 		      }
-		      // replace endline
 		      if ( l == endLine ) { 
 		        replaceComment = substring(splittedSource[l], 0, endColumn);
 		        splittedSource[l] = replaceFirst(splittedSource[l],replaceComment,replaceCommentWith);
@@ -115,7 +109,7 @@ public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	return duplicateLines;	
 }
 
-public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines) {
+public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLines, int minCloneSize) {
 	
 	// Put all listrelations in one list
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
@@ -180,6 +174,7 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 
 		// Create list with start- and end line numbers
 		lrel[int,int] dupLineRel = [];
+
 		for ( fileLineNumbers <- groupLineList ) {
 			dupLineRel = dupLineRel + <fileLineNumbers[0],fileLineNumbers[size(fileLineNumbers)-1]>;
 		}
@@ -199,7 +194,7 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 	
 	//println(sourceLookupMap);
 	
-	// Start looking for clones, from file perspective...
+	// Start looking for clones, from file perspective
 	list[lrel[str,int,int]] cloneList = [];
 	for ( file <- enclosedLinesPerFile ) {
 		// For each enclosed group determine the source lines for current file
@@ -207,8 +202,34 @@ public list[lrel[str,int,int]] getType1Clones(map[str,lrel[int,str]] duplicateLi
 			int amountLines = enclosedLines[1] - enclosedLines[0] + 1;
 			int lineIterator = 0;
 			
-			// Situation when it concerns an isolated LOC duplicate
-			if ( amountLines == 1 ) {
+			// Multi row duplicates
+			if ( amountLines >= minCloneSize ) {
+				
+				// Orginal source lines in a list
+				list[str] orgSrcLines = [];
+				for ( lineNo <- [enclosedLines[0]..enclosedLines[1] + 1] ) {
+					orgSrcLines = orgSrcLines + sourceLookupMap[<lineNo,file>];					
+				}
+				
+				println(file);
+				println(enclosedLines);
+				println(orgSrcLines);
+				
+				// List of enclosed lines in other files with matching source lines
+				
+				map[str,lrel[int,int]] possibleClonedLines = ();
+				for ( orgSrcLine <- orgSrcLines ) {
+					lrel [int,str] dupLines = duplicateLines[orgSrcLine];
+					//lrel [int,str] clonedLines = [];
+					//for ( dupLine <- dupLines ) {
+					//	println(dupLine);
+					//}		
+					println(dupLines);			
+				}
+			}
+			
+			// Single line duplicates
+			if ( minCloneSize == 1 ) {
 				str singleSourceLine = sourceLookupMap[<enclosedLines[0],file>];
 				// Go through duplicates lines in other files
 				for ( duplicateLine <- duplicateLines[singleSourceLine] ) {
