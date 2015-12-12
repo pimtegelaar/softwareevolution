@@ -18,6 +18,16 @@ set[Declaration] geHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
 
 public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
 
+public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
+  map[int,set[set[loc]]] result = ();
+  for(i <- domain(index)) {
+    result[i]=duplicates(index[i]);
+  }
+  return result;  
+}
+
+
+
 public list[loc] sources(set[Declaration] decl) {
   list[loc] result = [];
   visit(decl) {
@@ -30,8 +40,8 @@ public list[loc] sources(set[Declaration] decl) {
   return result;
 }
 
-public rel[str,loc] indexeer(set[Declaration] decl, int threshold) {
-  rel[str,loc] result = {};
+public rel[int,str,loc] indexeer(set[Declaration] decl, int threshold) {
+  rel[int,str,loc] result = {};
   visit(decl) {
     case a: Type _: result+=makeRel(a,threshold)?{};
     case a: Statement _: result+=makeRel(a,threshold)?{};
@@ -41,45 +51,45 @@ public rel[str,loc] indexeer(set[Declaration] decl, int threshold) {
   return result;
 }
 
-public rel[str,loc]  makeRel(Type a, int threshold) {
+public rel[int,str,loc] makeRel(Type a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
         hash = md5(astToString(a));
-        return {<hash,a@src>};
+        return {<nrOfStatements,hash,a@src>};
     }
   }
   return {};
 }
 
-public rel[str,loc]  makeRel(Statement a, int threshold) {
+public rel[int,str,loc] makeRel(Statement a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
         hash = md5(astToString(a));
-        return {<hash,a@src>};
+        return {<nrOfStatements,hash,a@src>};
     }
   }
   return {};
 }
 
-public rel[str,loc]  makeRel(Expression a, int threshold) {
+public rel[int,str,loc] makeRel(Expression a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
         hash = md5(astToString(a));
-        return {<hash,a@src>};
+        return {<nrOfStatements,hash,a@src>};
     }
   }
   return {};
 }
 
-public rel[str,loc]  makeRel(Declaration a, int threshold) {
+public rel[int,str,loc] makeRel(Declaration a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
         hash = md5(astToString(a));
-        return {<hash,a@src>};
+        return {<nrOfStatements,hash,a@src>};
     }
   }
   return {};
