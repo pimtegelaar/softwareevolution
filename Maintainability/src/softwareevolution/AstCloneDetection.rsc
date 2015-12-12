@@ -5,7 +5,7 @@ import Prelude;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import lang::java::m3::AST;
+import lang::java::jdt::m3::AST;
 import softwareevolution::Measure;
 
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
@@ -22,7 +22,11 @@ public list[loc] sources2(Declaration decl) {
   }
   return result;
 }
-public list[loc] sources(Declaration decl) {
+
+set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
+set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
+
+public list[loc] sources(set[Declaration] decl) {
   result = [];
   visit(decl) {
 
@@ -89,7 +93,7 @@ public list[loc] sources(Declaration decl) {
     case a: \this(Expression thisExpression): result += a@src;
     case a: \super(): result += a@src;
     case a: \declarationExpression(Declaration decl): result += a@src;
-    case a: \infix(Expression lhs, str operator, Expression rhs): result += a@src;
+    //case a: \infix(Expression lhs, str operator, Expression rhs): result += a@src;
     case a: \postfix(Expression operand, str operator): result += a@src;
     case a: \prefix(str operator, Expression operand): result += a@src;
     case a: \simpleName(str name): result += a@src;
@@ -113,8 +117,8 @@ public list[loc] sources(Declaration decl) {
     case a: \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions): result += a@src;
     case a: \constructor(str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl): result += a@src;
     case a: \import(str name): result += a@src;
-    case a: \package(str name): result += a@src;
-    case a: \package(Declaration parentPackage, str name): result += a@src;
+    //case a: \package(str name): result += a@src;
+    //case a: \package(Declaration parentPackage, str name): result += a@src;
     //case a: \variables(Type \type, list[Expression] \fragments): result += a@src;
     case a: \typeParameter(str name, list[Type] extendsList): result += a@src;
     case a: \annotationType(str name, list[Declaration] body): result += a@src;
