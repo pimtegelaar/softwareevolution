@@ -260,22 +260,19 @@ public map[tuple[int,int,str],lrel[int,int,str]] getPossibleCloneLookupMap( map[
 	map[tuple[int,int,str],lrel[int,int,str]] possibleClonedLinesCleaned = ();
 	for ( possibleClone <- possibleClonedLines ) {
 		lrel[int,int,str] listSubClones = [];
-		for ( subClone <- possibleClonedLines[possibleClone] ) {		
-			// Only continue when the subClone is different from the possibleClone
-			if ( possibleClone != subClone ) {		
-				if ( possibleClonedLinesCleaned[possibleClone]? ) {
-					bool cloneAlreadyInList = false;
-					if ( [subClone] <= listSubClones ) { cloneAlreadyInList = true; }
-					// Only add if subClone is not already in the map
-					if ( cloneAlreadyInList == false ) {
-						possibleClonedLinesCleaned[possibleClone] += [subClone];
-						listSubClones += [subClone];
-					}
+		for ( subClone <- possibleClonedLines[possibleClone] ) {	
+			if ( possibleClonedLinesCleaned[possibleClone]? ) {
+				bool cloneAlreadyInList = false;
+				if ( [subClone] <= listSubClones ) { cloneAlreadyInList = true; }
+				// Only add if subClone is not already in the map
+				if ( cloneAlreadyInList == false ) {
+					possibleClonedLinesCleaned[possibleClone] += [subClone];
+					listSubClones += [subClone];
 				}
-				else {
-					possibleClonedLinesCleaned[possibleClone] = [subClone];
-					listSubClones = [subClone];
-				}		
+			}
+			else {
+				possibleClonedLinesCleaned[possibleClone] = [subClone];
+				listSubClones = [subClone];
 			}
 		}
 		listSubClones = [];
@@ -284,7 +281,7 @@ public map[tuple[int,int,str],lrel[int,int,str]] getPossibleCloneLookupMap( map[
 }
 
 /** Generate list of type 1 clone pairs */
-public list[lrel[str,int,int]] getType1Clones(M3 model, int minCloneSize) {
+public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 	
 	map[str,lrel[int,str]] srcDuplicates = getSourceDuplicates(model);
 	map[tuple[int,str],str] srcLookupMap = getSourceLookupMap(srcDuplicates);
@@ -300,86 +297,119 @@ public list[lrel[str,int,int]] getType1Clones(M3 model, int minCloneSize) {
 	                                                                                             );
 	
 	// Start looking for clones, from file perspective
-	list[lrel[str,int,int]] cloneList = [];
+	list[lrel[int,int,str]] cloneList = [];
 	for ( file <- enclosedLinesPerFile ) {
 		for ( enclosedLines <- enclosedLinesPerFile[file] ) {
 			int amountLines = enclosedLines[1] - enclosedLines[0] + 1;	
 			
 			// Single line clones
 			if ( minCloneSize == 1 ) {
-				str singleSourceLine = srcLookupMap[<enclosedLines[0],file>];
-				
-				println(file);
-				println("org line");
-				println(singleSourceLine);
-				
+				str singleSourceLine = srcLookupMap[<enclosedLines[0],file>];			
 				// Only look through the lines that exist in the possibleClones map
 				if ( possibleClonesLookupMap[<enclosedLines[0],enclosedLines[1],file>]? ) {
 					str refSourceLine = "";
 					for ( possibleClones <- possibleClonesLookupMap[<enclosedLines[0],enclosedLines[1],file>] ) {
 						refSourceLine = srcLookupMap[<possibleClones[0],possibleClones[2]>];
 						if ( singleSourceLine == refSourceLine ) {
-							cloneList += [[ <file, enclosedLines[0], enclosedLines[0]>
-				                          , <possibleClones[2], possibleClones[0], possibleClones[0]>
+							cloneList += [[ <enclosedLines[0], enclosedLines[0], file>
+				                          , <possibleClones[0], possibleClones[0], possibleClones[2]>
 				                         ]];
 						}
 					}
 				}
 			}
 			
-			//// Multi row clones
-			//if ( 0 >= minCloneSize ) {
-			//	
-			//	// Orginal enclosed source lines in a list
-			//	list[tuple[int,str]] orgSrcLines = [];
-			//	for ( lineNo <- [enclosedLines[0]..enclosedLines[1] + 1] ) {
-			//		orgSrcLines = orgSrcLines + <lineNo,srcLookupMap[<lineNo,file>]>;					
-			//	}
-			//	
-			//	// Check all reference lines against the current line list
-			//	list[tuple[int,str]] refSrcLines = [];
-			//	for ( possibleClonesFile <- possibleClonedLines ) {
-			//		for ( checkLines <- possibleClonedLines[possibleClonesFile] ) {
-			//			// Check the reference source lines
-			//			for ( lineNo <- [checkLines[0]..checkLines[1] + 1] ) {
-			//				refSrcLines += <lineNo,srcLookupMap[<lineNo,possibleClonesFile>]>;
-			//			}
-			//			
-			//			// Try to match the referenced lines with the original lines
-			//			for ( refSrcLine <- refSrcLines ) {
-			//				// Is referenced line part of original lines?
-			//				if ( [refSrcLine[1]] <= range(orgSrcLines) ) {
-			//					for ( orgSrcLine <- orgSrcLines ) {
-			//						if (orgSrcLine[1] == refSrcLine[1]) {
-			//							int startOrgLineNo = orgSrcLine[0];
-			//							int startRefLineNo = refSrcLine[0];
-			//							//println("start org line no");
-			//							//println(startOrgLineNo);
-			//							//println("start ref line no");
-			//							//println(startRefLineNo);
-			//							int cloneLineAmount = 1;
-			//							// Try to detect largest clone possible
-			//							while ( cloneLineAmount < minCloneSize ) {
-			//								//int nextOrgLineNo = orgSrcLine[0] + cloneLineAmount;
-			//								//int nextRefLineNo = refSrcLine[0] + cloneLineAmount;
-			//								//str nextOrgSrcLine = srcLookupMap[<nextOrgLineNo,file>];
-			//								//str nextRefSrcLine = srcLookupMap[<nextRefLineNo,possibleClonesFile>];
-			//								//println("next org line no");
-			//								//println(nextOrgLineNo);
-			//								//println("next ref line no");
-			//								//println(nextRefLineNo);
-			//								cloneLineAmount += 1;
-			//								break;
-			//							}										
-			//						}
-			//					}
-			//				}
-			//			}
-			//			
-			//			refSrcLines = [];						
-			//		}
-			//	}
-			//}
+			// Multi row clones
+			if ( amountLines >= minCloneSize ) {				
+				
+				// Orginal enclosed source lines in a list
+				list[str] orgSrcLines = [ srcLookupMap[<n,file>] | n <- [enclosedLines[0]..enclosedLines[1] + 1] ];				
+				lrel[int,int,str] possibleClonesList = possibleClonesLookupMap[<enclosedLines[0],enclosedLines[1],file>];				
+				
+				println("org file");
+				println(file);
+				println(enclosedLines);
+				println("org lines");
+				println(orgSrcLines);
+				println("possible clones");
+				println(possibleClonesList);
+				
+				// Create map to lookup original source line numbers
+				int orgLineIndex = 0;
+				map[int,int] orgIndexToLineNo = ();
+				for ( lineNo <- [enclosedLines[0]..enclosedLines[1] + 1] ) {
+					orgIndexToLineNo[orgLineIndex] = lineNo; 
+					orgLineIndex += 1;
+				}
+				orgLineIndex = 0;
+				
+				// Get source lines from reference file
+				map[tuple[int,int,str],list[str]] refSrcLines = ();
+				for ( possibleCloneLines <- possibleClonesList ) {
+					refList = [srcLookupMap[<n,possibleCloneLines[2]>] | n <- [possibleCloneLines[0]..possibleCloneLines[1] + 1]];
+					refSrcLines[<possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>] = refList;
+				}
+		
+				// orgSrcLines, refSrcLines, orgIndexToLineNo
+				
+				for ( possibleCloneLines <- possibleClonesList ) {
+					int amountRefLines = possibleCloneLines[1] - possibleCloneLines[0] + 1;	
+					println("possible clone");
+					println(possibleCloneLines);
+					println(refSrcLines[possibleCloneLines]);
+					
+					if ( amountRefLines == 1 ) {
+						int orgLineIndexSub = 0;
+						for ( orgSrcLine <- orgSrcLines ) {
+							int orgLineNo = orgIndexToLineNo[orgLineIndexSub];
+							if ( [orgSrcLine] == refSrcLines[possibleCloneLines] ) {
+								cloneList += [[ <orgLineNo,orgLineNo,file>
+								              , <possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>
+								             ]];
+							}
+							orgLineIndexSub += 1;
+						}
+						orgLineIndexSub = 0;
+					}
+				}
+				
+				// Compare the original sourcelines with the reference sourcelines and determine multiline clones
+				
+				//println(refSrcLines);
+				relOrgRef = [];
+				refSrcLines = ();
+				
+				//// Check all reference lines against the current line list
+				//list[tuple[int,str]] refSrcLines = [];
+				//for ( possibleClonesFile <- possibleClonedLines ) {
+				//	for ( checkLines <- possibleClonedLines[possibleClonesFile] ) {
+				//		// Check the reference source lines
+				//		for ( lineNo <- [checkLines[0]..checkLines[1] + 1] ) {
+				//			refSrcLines += <lineNo,srcLookupMap[<lineNo,possibleClonesFile>]>;
+				//		}
+				//		
+				//		// Try to match the referenced lines with the original lines
+				//		for ( refSrcLine <- refSrcLines ) {
+				//			// Is referenced line part of original lines?
+				//			if ( [refSrcLine[1]] <= range(orgSrcLines) ) {
+				//				for ( orgSrcLine <- orgSrcLines ) {
+				//					if (orgSrcLine[1] == refSrcLine[1]) {
+				//						int startOrgLineNo = orgSrcLine[0];
+				//						int startRefLineNo = refSrcLine[0];
+				//						int cloneLineAmount = 1;
+				//						// Try to detect largest clone possible
+				//						while ( cloneLineAmount < minCloneSize ) {
+				//							cloneLineAmount += 1;
+				//							break;
+				//						}										
+				//					}
+				//				}
+				//			}
+				//		}
+				//		refSrcLines = [];						
+				//	}
+				//}
+			}
 		}
 	}
 	
