@@ -33,34 +33,57 @@ public list[loc] sources(set[Declaration] decl) {
 public rel[str,loc] indexeer(set[Declaration] decl, int threshold) {
   rel[str,loc] result = {};
   visit(decl) {
-    case a: Type _: if(countStatements(a)>threshold) {
-      if(a@src?) {
-        hash = md5(astToString(a));
-        result+=<hash,a@src>;
-      }
-    }
-    case a: Statement _: if(countStatements(a)>threshold) {
-      if(a@src?) {
-        hash = md5(astToString(a));
-        result+=<hash,a@src>;
-      }
-    }
-    case a: Expression _: if(countStatements(a)>threshold) {
-      if(a@src?) {
-        hash = md5(astToString(a));
-        result+=<hash,a@src>;
-      }
-    }
-    case a: Declaration _: if(countStatements(a)>threshold) {
-      if(a@src?) {
-        hash = md5(astToString(a));
-        result+=<hash,a@src>;
-      }
-    }
+    case a: Type _: result+=makeRel(a,threshold)?{};
+    case a: Statement _: result+=makeRel(a,threshold)?{};
+    case a: Expression _: result+=makeRel(a,threshold)?{};
+    case a: Declaration _: result+=makeRel(a,threshold)?{};
   }
   return result;
 }
 
+public rel[str,loc]  makeRel(Type a, int threshold) {
+  if(a@src?) {
+    int nrOfStatements = countStatements(a);
+    if(nrOfStatements > threshold) {
+        hash = md5(astToString(a));
+        return {<hash,a@src>};
+    }
+  }
+  return {};
+}
+
+public rel[str,loc]  makeRel(Statement a, int threshold) {
+  if(a@src?) {
+    int nrOfStatements = countStatements(a);
+    if(nrOfStatements > threshold) {
+        hash = md5(astToString(a));
+        return {<hash,a@src>};
+    }
+  }
+  return {};
+}
+
+public rel[str,loc]  makeRel(Expression a, int threshold) {
+  if(a@src?) {
+    int nrOfStatements = countStatements(a);
+    if(nrOfStatements > threshold) {
+        hash = md5(astToString(a));
+        return {<hash,a@src>};
+    }
+  }
+  return {};
+}
+
+public rel[str,loc]  makeRel(Declaration a, int threshold) {
+  if(a@src?) {
+    int nrOfStatements = countStatements(a);
+    if(nrOfStatements > threshold) {
+        hash = md5(astToString(a));
+        return {<hash,a@src>};
+    }
+  }
+  return {};
+}
 
 public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
   list[loc] result = [];
