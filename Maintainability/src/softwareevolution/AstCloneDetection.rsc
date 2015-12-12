@@ -12,6 +12,8 @@ import softwareevolution::Crypto;
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
 
+public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
+
 public list[loc] sources(set[Declaration] decl) {
   list[loc] result = [];
   visit(decl) {
@@ -28,28 +30,33 @@ public rel[str,loc] indexeer(set[Declaration] decl, int threshold) {
   rel[str,loc] result = {};
   visit(decl) {
     case a: Type _: if(countStatements(a)>threshold) {
-      source = a@src?[];
-      hash = md5(astToString(a));
-      result+=<hash,source>;
+      if(a@src?) {
+        hash = md5(astToString(a));
+        result+=<hash,a@src>;
+      }
     }
     case a: Statement _: if(countStatements(a)>threshold) {
-      source = a@src?[];
-      hash = md5(astToString(a));
-      result+=<hash,source>;
+      if(a@src?) {
+        hash = md5(astToString(a));
+        result+=<hash,a@src>;
+      }
     }
     case a: Expression _: if(countStatements(a)>threshold) {
-      source = a@src?[];
-      hash = md5(astToString(a));
-      result+=<hash,source>;
+      if(a@src?) {
+        hash = md5(astToString(a));
+        result+=<hash,a@src>;
+      }
     }
     case a: Declaration _: if(countStatements(a)>threshold) {
-      source = a@src?[];
-      hash = md5(astToString(a));
-      result+=<hash,source>;
+      if(a@src?) {
+        hash = md5(astToString(a));
+        result+=<hash,a@src>;
+      }
     }
   }
   return result;
 }
+
 
 public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
   list[loc] result = [];
