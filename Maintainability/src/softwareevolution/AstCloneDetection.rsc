@@ -7,6 +7,7 @@ import lang::java::jdt::m3::Core;
 
 import lang::java::jdt::m3::AST;
 import softwareevolution::Measure;
+import softwareevolution::Crypto;
 
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
@@ -19,6 +20,33 @@ public list[loc] sources(set[Declaration] decl) {
     case a: Modifier _: result+= a@src?[];
     case a: Type _: result+= a@src?[];
     case a: Declaration _: result+= a@src?[];
+  }
+  return result;
+}
+
+public rel[str,loc] indexeer(set[Declaration] decl, int threshold) {
+  rel[str,loc] result = {};
+  visit(decl) {
+    case a: Type _: if(countStatements(a)>threshold) {
+      source = a@src?[];
+      hash = md5(astToString(a));
+      result+=<hash,source>;
+    }
+    case a: Statement _: if(countStatements(a)>threshold) {
+      source = a@src?[];
+      hash = md5(astToString(a));
+      result+=<hash,source>;
+    }
+    case a: Expression _: if(countStatements(a)>threshold) {
+      source = a@src?[];
+      hash = md5(astToString(a));
+      result+=<hash,source>;
+    }
+    case a: Declaration _: if(countStatements(a)>threshold) {
+      source = a@src?[];
+      hash = md5(astToString(a));
+      result+=<hash,source>;
+    }
   }
   return result;
 }
@@ -42,7 +70,7 @@ public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl)
 public int countStatements(Statement decl) = (0 | it +1 | /Statement _ := decl);
 public int countStatements(Type decl) = (0 | it +1 | /Statement _ := decl);
 
-public str astToString(Declaration decl) {
+public str astToString(value decl) {
   str result = "";
   visit(decl) {
     // Statements
