@@ -23,10 +23,24 @@ public list[loc] sources(set[Declaration] decl) {
   return result;
 }
 
+public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
+  list[loc] result = [];
+  visit(decl) {
+    case a: Type _: if(countStatements(a)>threshold) result+=a@src?[];
+    case a: Statement _: if(countStatements(a)>threshold) result+=a@src?[];
+    case a: Expression _: if(countStatements(a)>threshold) result+=a@src?[];
+    case a: Declaration _: if(countStatements(a)>threshold) result+=a@src?[];
+  }
+  return result;
+}
+
 set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
 set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
 
 public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Statement decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Type decl) = (0 | it +1 | /Statement _ := decl);
 
 public str astToString(Declaration decl) {
   str result = "";
