@@ -12,6 +12,10 @@ import softwareevolution::Crypto;
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
 
+set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
+set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
+set[Declaration] geHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
+
 public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
 
 public list[loc] sources(set[Declaration] decl) {
@@ -69,8 +73,6 @@ public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
   return result;
 }
 
-set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
-set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
 
 public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
 public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl);
