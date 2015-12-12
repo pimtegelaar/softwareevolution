@@ -53,13 +53,6 @@ public class Main {
 		System.out.println(doingTheSameThing);
 		
 		doingTheSameThing = 1;
-		doingTheSameThing = 2;
-		doingTheSameThing = 3;
-		doingTheSameThing = 4;
-		doingTheSameThing = 5;
-		doingTheSameThing = 6;
-		
-		doingTheSameThing = 1;
 		
 		doingTheSameThing = 1;
 		
@@ -71,6 +64,10 @@ public class Main {
 		doingTheSameThing = 4;
 		doingTheSameThing = 5;
 		doingTheSameThing = 6;
+		
+		int m;
+		int z;
+		int n;
 		
 		System.out.println("Is the program analyzed: " + analyzer);
 	}
