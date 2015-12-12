@@ -21,7 +21,10 @@ public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeBy
 public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
   map[int,set[set[loc]]] result = ();
   for(i <- domain(index)) {
-    result[i]=duplicates(index[i]);
+    set[set[loc]]dup = duplicates(index[i]);
+    if(size(dup)>1) {
+      result[i]=dup;
+    }
   }
   return result;  
 }
