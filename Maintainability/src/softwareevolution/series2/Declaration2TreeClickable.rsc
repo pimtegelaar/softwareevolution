@@ -17,7 +17,7 @@ public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/
 
 public Figure t(str description,str color) = t(description,color,[]);
 public Figure t(str description,str color, list[Figure] children) = t(description,color,children,[std(size(20)), std(gap(10))]);
-public Figure t(str description,str color, list[Figure] children, list[FProperty] properties) = tree(box(text(description,fontColor("white")),fillColor(color)),children,properties);
+public Figure t(str description,str color, list[Figure] children, list[FProperty] properties) = tree(box(text(description,fontColor("white")),fillColor(color)),children,properties+[std(size(20)), std(gap(10))]);
 
 // Declarations
 public Figure mapD2T(m: \compilationUnit(list[Declaration] imports, list[Declaration] types)) = t("compilationUnit","purple",[mapD2T(\import)|\import<-imports]+[mapD2T(\type)|\type<-types],[md(m)]);
