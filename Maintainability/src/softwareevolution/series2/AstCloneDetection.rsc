@@ -19,6 +19,10 @@ set[Declaration] geHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
 
 public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
 
+@doc{convenience method}
+public map[int,set[set[loc]]]  chained(set[Declaration] decl, int threshold) = duplicates(indexeer(decl,threshold));
+
+@doc{generates a map of duplicates for a given index}
 public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
   map[int,set[set[loc]]] result = ();
   for(i <- domain(index)) {
@@ -30,18 +34,9 @@ public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
   return result;  
 }
 
-public list[loc] sources(set[Declaration] decl) {
-  list[loc] result = [];
-  visit(decl) {
-    case a: Statement _: result+= a@src?[];
-    case a: Expression _: result+= a@src?[];
-    case a: Modifier _: result+= a@src?[];
-    case a: Type _: result+= a@src?[];
-    case a: Declaration _: result+= a@src?[];
-  }
-  return result;
-}
 
+@doc{creates an index for a set of declarations. 
+The threshold is the minimum number of statements a subtree should have, in order to be considered}
 public rel[int,str,loc] indexeer(set[Declaration] decl, int threshold) {
   rel[int,str,loc] result = {};
   visit(decl) {
@@ -97,6 +92,15 @@ public rel[int,str,loc] makeRel(Declaration a, int threshold) {
   return {};
 }
 
+
+
+public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Statement decl) = (0 | it +1 | /Statement _ := decl);
+public int countStatements(Type decl) = (0 | it +1 | /Statement _ := decl);
+
+// Old methods below:
+
 public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
   list[loc] result = [];
   visit(decl) {
@@ -109,7 +113,14 @@ public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
 }
 
 
-public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
-public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl);
-public int countStatements(Statement decl) = (0 | it +1 | /Statement _ := decl);
-public int countStatements(Type decl) = (0 | it +1 | /Statement _ := decl);
+public list[loc] sources(set[Declaration] decl) {
+  list[loc] result = [];
+  visit(decl) {
+    case a: Statement _: result+= a@src?[];
+    case a: Expression _: result+= a@src?[];
+    case a: Modifier _: result+= a@src?[];
+    case a: Type _: result+= a@src?[];
+    case a: Declaration _: result+= a@src?[];
+  }
+  return result;
+}
