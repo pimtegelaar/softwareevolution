@@ -1,13 +1,12 @@
 module softwareevolution::series2::Declartion2Tree
 
+import Prelude;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
 import lang::java::m3::AST;
 import demo::lang::Exp::Concrete::WithLayout::Syntax;
-import ParseTree;
 import vis::Figure;
-import vis::ParseTree;
 import vis::Render;
 import softwareevolution::series1::Measure;
 
@@ -96,7 +95,7 @@ public Figure mapD2T(\methodCall(bool isSuper, str name, list[Expression] argume
 public Figure mapD2T(\methodCall(bool isSuper, Expression receiver, str name, list[Expression] arguments)) = t(name,"blue",mapD2T(receiver)+[mapD2T(argument) | argument <- arguments]);
 public Figure mapD2T(Expression::\null()) = t("null","blue");
 public Figure mapD2T(\number(str numberValue)) = t(numberValue,"blue");
-public Figure mapD2T(\booleanLiteral(bool boolValue)) = t(boolVale,"blue");
+public Figure mapD2T(\booleanLiteral(bool boolValue)) = t(toString(boolValue),"blue");
 public Figure mapD2T(\stringLiteral(str stringValue)) = t(stringValue,"blue");
 public Figure mapD2T(\type(Type \type)) = t("type","blue",[mapD2T(\type)]);
 public Figure mapD2T(\variable(str name, int extraDimensions)) = t("var: "+name,"blue");
