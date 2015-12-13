@@ -8,6 +8,7 @@ import ListRelation;
 import Set;
 import String;
 import Map;
+import util::Math;
 import IO;
 
 import softwareevolution::series2::CommentReplace;
@@ -165,7 +166,7 @@ public map[tuple[int,int,str],lrel[int,int,str]] getPossibleCloneLookupMap( map[
 	// Go through enclosed lines, build clone lookup structure from there
 	for ( enclosedLineFile <- enclosedLinesPerFile ) {	
 		for ( enclosedLines <- enclosedLinesPerFile[enclosedLineFile] ) {		    
-		    // Through every single source line of the enclosed lines
+		    // Through every source line of the enclosed lines
 		    for ( currSrcLineNo <- [enclosedLines[0]..enclosedLines[1] + 1] ) {
 		    	str currSrcLine = srcLookupMap[<currSrcLineNo,enclosedLineFile>];
 		    	// For the current line, check the duplicate lines
@@ -239,10 +240,17 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 					str refSourceLine = "";
 					for ( possibleClones <- possibleClonesLookupMap[<enclosedLines[0],enclosedLines[1],file>] ) {
 						refSourceLine = srcLookupMap[<possibleClones[0],possibleClones[2]>];
-						if ( singleSourceLine == refSourceLine ) {
-							clonePairs += [[ <enclosedLines[0], enclosedLines[0], file>
-				                           , <possibleClones[0], possibleClones[0], possibleClones[2]>
-				                          ]];
+						bool selfRef = false;
+						if ( file == possibleClones[2]
+						  && enclosedLines == <possibleClones[0],possibleClones[1]>
+						   ) { selfRef = true; }
+						// Add when it is not a selfreference and sourcelines match
+						if ( selfRef == false ) {
+							if ( singleSourceLine == refSourceLine ) {
+								clonePairs += [[ <enclosedLines[0], enclosedLines[0], file>
+					                           , <possibleClones[0], possibleClones[0], possibleClones[2]>
+					                          ]];
+							}
 						}
 					}
 				}
@@ -349,6 +357,7 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 	// Cleanup duplicate clone references
 	cleanedClonePairs = cleanCloneList(clonePairs);
 	
+	//return [];
 	return cleanedClonePairs;
 }
 
