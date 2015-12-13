@@ -1,4 +1,4 @@
-module softwareevolution::series2::Declartion2Tree
+module softwareevolution::series2::Declaration2Tree
 
 import Prelude;
 import lang::java::m3::Core;
