@@ -52,7 +52,7 @@ public rel[int,str,loc] indexeer(set[Declaration] decl, int threshold) {
   return result;
 }
 
-public rel[int,str,loc] makeRel(Type a, int threshold) {
+private rel[int,str,loc] makeRel(Type a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
@@ -63,7 +63,7 @@ public rel[int,str,loc] makeRel(Type a, int threshold) {
   return {};
 }
 
-public rel[int,str,loc] makeRel(Statement a, int threshold) {
+private rel[int,str,loc] makeRel(Statement a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
@@ -74,7 +74,7 @@ public rel[int,str,loc] makeRel(Statement a, int threshold) {
   return {};
 }
 
-public rel[int,str,loc] makeRel(Expression a, int threshold) {
+private rel[int,str,loc] makeRel(Expression a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
@@ -85,7 +85,7 @@ public rel[int,str,loc] makeRel(Expression a, int threshold) {
   return {};
 }
 
-public rel[int,str,loc] makeRel(Declaration a, int threshold) {
+private rel[int,str,loc] makeRel(Declaration a, int threshold) {
   if(a@src?) {
     int nrOfStatements = countStatements(a);
     if(nrOfStatements > threshold) {
