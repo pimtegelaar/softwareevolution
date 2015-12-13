@@ -1,4 +1,4 @@
-module softwareevolution::series2::Assertions
+module softwareevolution::series2::tests::Assertions
 
 public void assertEquals(value actual, value expected) {
   assert expected == actual : "Expected <expected>, but got <actual>";

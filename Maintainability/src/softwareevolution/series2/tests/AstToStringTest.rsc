@@ -1,4 +1,4 @@
-module softwareevolution::series2::AstToStringTest
+module softwareevolution::series2::tests::AstToStringTest
 
 import lang::java::jdt::m3::AST;
 import softwareevolution::series2::AstToString;

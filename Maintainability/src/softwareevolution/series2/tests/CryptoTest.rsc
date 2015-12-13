@@ -1,4 +1,4 @@
-module softwareevolution::series2::CryptoTest
+module softwareevolution::series2::tests::CryptoTest
 
 import softwareevolution::series2::Crypto;
 

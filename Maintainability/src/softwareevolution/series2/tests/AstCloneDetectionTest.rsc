@@ -1,4 +1,4 @@
-module softwareevolution::series2::AstCloneDetectionTest
+module softwareevolution::series2::tests::AstCloneDetectionTest
 
 import softwareevolution::series2::AstCloneDetection;
 
@@ -11,7 +11,7 @@ import lang::java::jdt::m3::AST;
 import softwareevolution::series1::Measure;
 import softwareevolution::series2::Crypto;
 import softwareevolution::series2::AstToString;
-import softwareevolution::series2::Assertions;
+import softwareevolution::series2::tests::Assertions;
 
 test bool test_countStatements() {
   result = countStatements(getA());

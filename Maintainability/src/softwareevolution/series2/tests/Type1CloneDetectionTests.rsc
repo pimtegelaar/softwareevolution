@@ -1,4 +1,4 @@
-module softwareevolution::series2::Type1CloneDetectionTests
+module softwareevolution::series2::tests::Type1CloneDetectionTests
 
 import Prelude;
 import lang::java::m3::Core;
