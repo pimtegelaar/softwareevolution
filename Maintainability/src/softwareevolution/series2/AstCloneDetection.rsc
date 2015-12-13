@@ -6,8 +6,8 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
 import lang::java::jdt::m3::AST;
-import softwareevolution::Measure;
-import softwareevolution::Crypto;
+import softwareevolution::series1::Measure;
+import softwareevolution::series2::Crypto;
 
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
