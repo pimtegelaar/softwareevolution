@@ -10,11 +10,16 @@ import softwareevolution::series1::Measure;
 import softwareevolution::series2::Crypto;
 import softwareevolution::series2::AstToString;
 
+@memo
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
+@memo
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());
 
+@memo
 set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
+@memo
 set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
+@memo
 set[Declaration] getHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
 
 public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
@@ -33,7 +38,6 @@ public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
   }
   return result;  
 }
-
 
 @doc{creates an index for a set of declarations. 
 The threshold is the minimum number of statements a subtree should have, in order to be considered}
@@ -92,35 +96,7 @@ public rel[int,str,loc] makeRel(Declaration a, int threshold) {
   return {};
 }
 
-
-
 public int countStatements(Declaration decl) = (0 | it +1 | /Statement _ := decl);
 public int countStatements(Expression decl) = (0 | it +1 | /Statement _ := decl);
 public int countStatements(Statement decl) = (0 | it +1 | /Statement _ := decl);
 public int countStatements(Type decl) = (0 | it +1 | /Statement _ := decl);
-
-// Old methods below:
-
-public list[loc] atleastXStatements(set[Declaration] decl, int threshold) {
-  list[loc] result = [];
-  visit(decl) {
-    case a: Type _: if(countStatements(a)>threshold) result+=a@src?[];
-    case a: Statement _: if(countStatements(a)>threshold) result+=a@src?[];
-    case a: Expression _: if(countStatements(a)>threshold) result+=a@src?[];
-    case a: Declaration _: if(countStatements(a)>threshold) result+=a@src?[];
-  }
-  return result;
-}
-
-
-public list[loc] sources(set[Declaration] decl) {
-  list[loc] result = [];
-  visit(decl) {
-    case a: Statement _: result+= a@src?[];
-    case a: Expression _: result+= a@src?[];
-    case a: Modifier _: result+= a@src?[];
-    case a: Type _: result+= a@src?[];
-    case a: Declaration _: result+= a@src?[];
-  }
-  return result;
-}
