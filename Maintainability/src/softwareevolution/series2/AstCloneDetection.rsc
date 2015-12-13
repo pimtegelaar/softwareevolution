@@ -15,7 +15,7 @@ public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/
 
 set[Declaration] getTr() = createAstsFromEclipseProject(testRascal,true);
 set[Declaration] getSdb() = createAstsFromEclipseProject(smallDB,true);
-set[Declaration] geHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
+set[Declaration] getHsqlDB() = createAstsFromEclipseProject(hyperSonicDB,false);
 
 public set[set[loc]] duplicates(rel[str,loc] index) = {rbd | rbd <- groupRangeByDomain(index), size(rbd)>1};
 
