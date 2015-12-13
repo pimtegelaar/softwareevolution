@@ -40,18 +40,25 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 		list[Figure] clonesPerFile = [];
 		for ( clone <- type1Clones ) {
 			if ( clone[0][2] == file ) { 
-				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange");
+				loc counterLoc = toLocation(clone[1][2]);
+				str counterFileName = counterLoc.file;
+				Figure counterFile = t(counterFileName, "pink");
+				str counterPart = toString(clone[1][0]) + "-" + toString(clone[1][1]);
+				Figure counterClone = t(counterPart, "green", [counterFile]);
+				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange", [counterClone]);
 				i += 1; 
 			}
 		}
+		// Write all file names with the clone data
 		fileFigures += t(allFiles[file] + ": " + toString(i) + " clones", "black", clonesPerFile);
 		clonesPerFile = [];
 		i = 0;
 	}
 	
-	// Create summary Figure
+	// Create summary Figure, parent of file Figure
 	str numberOfClones = toString(size(type1Clones));
 	Figure cloneSummary = t("Type 1 clones for " + description + " (min. clonesize = " + toString(minCloneSize) + "): " + numberOfClones, "blue", fileFigures);
 
+	//return();
 	return (cloneSummary);
 }
