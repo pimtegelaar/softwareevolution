@@ -1,4 +1,4 @@
-module softwareevolution::CommentCleanup
+module softwareevolution::series1::CommentCleanup
 
 import Prelude;
 import lang::java::m3::Core;

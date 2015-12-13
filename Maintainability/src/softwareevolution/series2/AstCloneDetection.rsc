@@ -1,4 +1,4 @@
-module softwareevolution::AstCloneDetection
+module softwareevolution::series2::AstCloneDetection
 
 import Prelude;
 
@@ -28,8 +28,6 @@ public map[int,set[set[loc]]] duplicates(rel[int,str,loc] index) {
   }
   return result;  
 }
-
-
 
 public list[loc] sources(set[Declaration] decl) {
   list[loc] result = [];

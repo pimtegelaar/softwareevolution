@@ -1,15 +1,15 @@
-module softwareevolution::Measure
+module softwareevolution::series1::Measure
 
 import Prelude;
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import softwareevolution::LinesOfCode;
-import softwareevolution::Duplication;
-import softwareevolution::UnitComplexity;
-import softwareevolution::CommentCleanup;
-import softwareevolution::UnitSize;
+import softwareevolution::series1::LinesOfCode;
+import softwareevolution::series1::Duplication;
+import softwareevolution::series1::UnitComplexity;
+import softwareevolution::series1::CommentCleanup;
+import softwareevolution::series1::UnitSize;
 
 /*
  * ----------- 

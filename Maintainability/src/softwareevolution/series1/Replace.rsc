@@ -1,4 +1,4 @@
-module softwareevolution::Replace
+module softwareevolution::series1::Replace
 
 import String;
 

@@ -1,6 +1,6 @@
-module softwareevolution::CryptoTest
+module softwareevolution::series2::CryptoTest
 
-import softwareevolution::Crypto;
+import softwareevolution::series2::Crypto;
 
 test bool test_md5_sameInpuHasSameHash(str message) = md5(message) == md5(message);
 

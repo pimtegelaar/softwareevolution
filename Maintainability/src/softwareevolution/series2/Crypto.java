@@ -1,4 +1,4 @@
-package softwareevolution;
+package softwareevolution.series2;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

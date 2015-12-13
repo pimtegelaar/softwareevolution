@@ -1,4 +1,4 @@
-module softwareevolution::Duplication2
+module softwareevolution::series1::Duplication2
 
 
 import Prelude;
@@ -6,8 +6,8 @@ import Prelude;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import softwareevolution::CommentCleanup;
-import softwareevolution::Replace;
+import softwareevolution::series1::CommentCleanup;
+import softwareevolution::series1::Replace;
 
 public tuple[int,int] totalDuplicateLines(M3 model) {
   withoutComments = eraseComments(model);

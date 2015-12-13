@@ -1,4 +1,4 @@
-module softwareevolution::Duplication
+module softwareevolution::series1::Duplication
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
@@ -7,7 +7,7 @@ import String;
 import IO;
 import Map;
 import util::Math;
-import softwareevolution::CommentCleanup;
+import softwareevolution::series1::CommentCleanup;
 
 /*
 ** Find duplicate code and calculate percentage of duplicate code

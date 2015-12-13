@@ -1,4 +1,4 @@
-module softwareevolution::Declartion2Tree
+module softwareevolution::series2::Declartion2Tree
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
@@ -9,7 +9,7 @@ import ParseTree;
 import vis::Figure;
 import vis::ParseTree;
 import vis::Render;
-import softwareevolution::Measure;
+import softwareevolution::series1::Measure;
 
 public Declaration getA() = getMethodASTEclipse(|java+method:///com/helloworld/HelloWorld/main(java.lang.String%5B%5D)|,model=getExampleProject());
 public Declaration getA2() = getMethodASTEclipse(|java+method:///smallsql/junit/TestThreads/testConcurrentThreadWrite()|,model=getSmallDB());

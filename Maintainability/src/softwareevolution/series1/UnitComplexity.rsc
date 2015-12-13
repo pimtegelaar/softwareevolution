@@ -1,12 +1,12 @@
-module softwareevolution::UnitComplexity
+module softwareevolution::series1::UnitComplexity
 
 import Prelude;
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import softwareevolution::Replace;
-import softwareevolution::CommentCleanup;
+import softwareevolution::series1::Replace;
+import softwareevolution::series1::CommentCleanup;
 
 public tuple[real low, real moderate, real high, real veryhigh] calcRiskComplexity(loc project) {
   model = createM3FromEclipseProject(project);

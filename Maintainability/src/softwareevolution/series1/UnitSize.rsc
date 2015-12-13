@@ -1,12 +1,12 @@
-module softwareevolution::UnitSize
+module softwareevolution::series1::UnitSize
 
 import Prelude;
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import softwareevolution::LinesOfCode;
-import softwareevolution::CommentCleanup;
+import softwareevolution::series1::LinesOfCode;
+import softwareevolution::series1::CommentCleanup;
 
 /*
 ** Get source information

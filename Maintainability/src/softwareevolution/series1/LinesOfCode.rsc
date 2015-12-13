@@ -1,12 +1,12 @@
-module softwareevolution::LinesOfCode
+module softwareevolution::series1::LinesOfCode
 
 import Prelude;
 
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 
-import softwareevolution::Replace;
-import softwareevolution::CommentCleanup;
+import softwareevolution::series1::Replace;
+import softwareevolution::series1::CommentCleanup;
 
 /**
  * We only count lines that contain atleast one non-whitespace character.
