@@ -12,6 +12,12 @@ import IO;
 
 import softwareevolution::series2::CommentReplace;
 
+public loc testRascal = |project://testrascal|;
+public loc testSmallProject = |project://verysmallproject|;
+
+public M3 getTestRascal() = createM3FromEclipseProject(testRascal);
+public M3 getSmallProject() = createM3FromEclipseProject(testSmallProject);
+
 /** Generate a map of files with their duplicate lines */
 public map[str,lrel[int,str]] getSourceDuplicates(M3 model) {
 	
@@ -65,7 +71,7 @@ public map[tuple[int,str],str] getSourceLookupMap(map[str,lrel[int,str]] duplica
 	return sourceLookupMap;
 }
 
-/** All duplicates listrelations in one list */
+/** All duplicates listrelations in one flat list */
 public lrel[int,str] mergeLines(map[str,lrel[int,str]] duplicateLines) {
 	list[lrel[int,str]] dupLineList = toList(range(duplicateLines));
 	lrel[int,str] mergedLineList = [];
@@ -219,7 +225,7 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 	                                                                                             );
 	
 	// Start looking for clones, from file perspective
-	list[lrel[int,int,str]] cloneList = [];
+	list[lrel[int,int,str]] clonePairs = [];
 	for ( file <- enclosedLinesPerFile ) {
 		for ( enclosedLines <- enclosedLinesPerFile[file] ) {
 			int amountLines = enclosedLines[1] - enclosedLines[0] + 1;	
@@ -234,9 +240,9 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 					for ( possibleClones <- possibleClonesLookupMap[<enclosedLines[0],enclosedLines[1],file>] ) {
 						refSourceLine = srcLookupMap[<possibleClones[0],possibleClones[2]>];
 						if ( singleSourceLine == refSourceLine ) {
-							cloneList += [[ <enclosedLines[0], enclosedLines[0], file>
-				                          , <possibleClones[0], possibleClones[0], possibleClones[2]>
-				                         ]];
+							clonePairs += [[ <enclosedLines[0], enclosedLines[0], file>
+				                           , <possibleClones[0], possibleClones[0], possibleClones[2]>
+				                          ]];
 						}
 					}
 				}
@@ -274,9 +280,9 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 					for ( orgSrcLine <- orgSrcLines ) {
 						int orgLineNo = orgIndexToLineNo[orgLineIndexSub];
 						if ( [orgSrcLine] == refSrcLines[possibleCloneLines] ) {
-							cloneList += [[ <orgLineNo,orgLineNo,file>
-							              , <possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>
-							             ]];
+							clonePairs += [[ <orgLineNo,orgLineNo,file>
+							               , <possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>
+							              ]];
 						}
 						orgLineIndexSub += 1;
 					}
@@ -331,16 +337,33 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 					int endOrgLinePos = nextOrgLinePos - 1;
 					int endRefLinePos = nextRefLinePos - 1;
 					
-					// Write the detected clone to the cloneList
-					cloneList += [[ <orgLinePos,endOrgLinePos,file>
-							      , <refLinePos,endRefLinePos,possibleCloneLines[2]>
-							     ]];
+					// Write the detected clone to the clonePairs
+					clonePairs += [[ <orgLinePos,endOrgLinePos,file>
+							       , <refLinePos,endRefLinePos,possibleCloneLines[2]>
+							      ]];
 				}
 			}
 		}
 	}
 	
 	// Cleanup duplicate clone references
+	cleanedClonePairs = cleanCloneList(clonePairs);
 	
-	return cloneList;
+	return cleanedClonePairs;
+}
+
+/** Clean list of clonepairs */
+public list[lrel[int,int,str]] cleanCloneList(list[lrel[int,int,str]] clonePairs) {
+	list[lrel[int,int,str]] cleanedClonePairs = [];
+	for ( clonePair <- clonePairs ) {
+		// Clone refers to itself
+		if ( clonePair[0][0] == clonePair[1][0]
+		  && clonePair[0][1] == clonePair[1][1]
+		  && clonePair[0][2] == clonePair[1][2]
+		   ) {
+		   cleanedClonePairs = cleanedClonePairs;
+		}
+		else { cleanedClonePairs += [clonePair]; }
+	}
+	return cleanedClonePairs;
 }

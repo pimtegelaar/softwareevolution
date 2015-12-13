@@ -40,7 +40,7 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 		list[Figure] clonesPerFile = [];
 		for ( clone <- type1Clones ) {
 			if ( clone[0][2] == file ) { 
-				clonesPerFile += t("lines " + toString(clone[0][0]) + "-" + toString(clone[0][0]), "orange");
+				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange");
 				i += 1; 
 			}
 		}
