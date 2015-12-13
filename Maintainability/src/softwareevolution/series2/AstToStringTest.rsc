@@ -3,7 +3,7 @@ module softwareevolution::series2::AstToStringTest
 import lang::java::jdt::m3::AST;
 import softwareevolution::series2::AstToString;
 
-private loc commandDrop = |file:///C:/git/softwareevolution/smallsql0.21_src/src/smallsql/database/CommandDrop.java|;
+private loc commandDrop = |project://smallsql0.21_src/src/smallsql/database/CommandDrop.java|;
 
 public Declaration getSampleAst() = createAstFromFile(commandDrop,true);
 
