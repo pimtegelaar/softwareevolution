@@ -283,7 +283,8 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 				int amountRefLines = possibleCloneLines[1] - possibleCloneLines[0] + 1;
 				
 				// Section for single line reference cases
-				if ( amountRefLines == 1 && minCloneSize == 1 ) {
+				if ( amountLines == 1 && amountRefLines > 1 && minCloneSize == 1 ) {
+				println(amountRefLines);
 					int orgLineIndexSub = 0;
 					for ( orgSrcLine <- orgSrcLines ) {
 						int orgLineNo = orgIndexToLineNo[orgLineIndexSub];
@@ -298,7 +299,7 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 				}
 				
 				// Section for multi line reference cases (depends on size parameter)
-				if ( amountLines >= minCloneSize && amountRefLines >= minCloneSize ) {				
+				if ( minCloneSize > 1 && amountLines >= minCloneSize && amountRefLines >= minCloneSize ) {
 					// Try to find the first match
 					bool refLineMatched = false;
 					int orgLinePos = 0;
@@ -320,7 +321,6 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 						orgLineIndexSub = 0;
 					}
 					refLineMatched = false;
-					
 					// Compare next lines, starting from initial match, as long as they are equal
 					int nextOrgLinePos = orgLinePos + 1;
 					int nextRefLinePos = refLinePos + 1;
