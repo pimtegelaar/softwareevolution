@@ -17,7 +17,7 @@ public Figure convertToTree(map[int,set[set[loc]]] clones) {
     for(cloneClass<-clones[statementSize]) {
       children3 = [];
       for(clone<-cloneClass) {
-        children3 += t("<clone>","blue", [],[md(clone)]); 
+        children3 += t("<clone.file> <clone.begin> <clone.end>","blue", [],[md(clone)]); 
       }
       children2 += t("","orange",children3,[std(gap(20))]);
     }
