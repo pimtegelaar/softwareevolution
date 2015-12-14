@@ -22,12 +22,13 @@ public M3 getSmallProject() = createM3FromEclipseProject(testSmallProject);
 
 /** Function to create a figure (with children) */
 public Figure t(str description,str color) = t(description,color,[]);
-public Figure t(str description,str color, list[Figure] children) = t(description,color,children,[std(size(20)), std(gap(10))]);
-public Figure t(str description,str color, list[Figure] children, list[FProperty] properties) = tree(box(text(description,fontColor("white")),fillColor(color)),children,properties);
+public Figure t(str description,str color, list[Figure] children) = t(description,color,children,[std(size(20)), std(gap(10)),std(orientation(leftRight()))]);
+public Figure t(str description,str color, list[Figure] children, list[FProperty] properties) = tree(box(text(description,fontColor("white")),fillColor(color)),children,properties+[std(size(20)), std(gap(10))]);
 
 /** Property for the mousedown event */
 public FProperty md(loc location) = onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-  edit(location,[info(1,"")]);
+    println(location);
+    edit(location,[info(1,"")]);
   return true;
 });
 
@@ -37,9 +38,9 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 	list[lrel[int,int,str]] type1Clones = getType1Clones(model,minCloneSize);
 	
 	// Create map with filenames from the model
-	map[str,str] allFiles = ();
+	map[str,tuple[str,loc]] allFiles = ();
 	for ( fileFromModel <- files(model) ) {
-		allFiles[fileFromModel.path] = fileFromModel.file;
+		allFiles[fileFromModel.path] = <fileFromModel.file,fileFromModel>;
 	}
 	
 	// Create Sub Figures with Clone data
@@ -48,18 +49,21 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 		int i = 0;
 		list[Figure] clonesPerFile = [];
 		for ( clone <- type1Clones ) {
-			if ( clone[0][2] == file ) { 
+			if ( clone[0][2] == allFiles[file][1].path ) { 
+				loc mainLoc = allFiles[file][1];
 				loc counterLoc = toLocation(clone[1][2]);
+				println(counterLoc);
+				println(mainLoc);
 				str counterFileName = counterLoc.file;
 				Figure counterFile = t(counterFileName, "red");
 				str counterPart = toString(clone[1][0]) + "-" + toString(clone[1][1]);
 				Figure counterClone = t(counterPart, "green", [counterFile], [md(counterLoc)]);
-				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange", [counterClone]);
+				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange", [counterClone], [md(mainLoc)]);
 				i += 1; 
 			}
 		}
 		// Write all file names with the clone data
-		fileFigures += t(allFiles[file] + ": " + toString(i) + " clones", "black", clonesPerFile);
+		fileFigures += t(allFiles[file][0] + ": " + toString(i) + " clones", "black", clonesPerFile);
 		clonesPerFile = [];
 		i = 0;
 	}
