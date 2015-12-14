@@ -35,7 +35,9 @@ public FProperty md(loc location) = onMouseDown(bool (int butnr, map[KeyModifier
 /** Show summary information about Type 1 clones */
 public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 	
+	println("get clones...");
 	list[lrel[int,int,str]] type1Clones = getType1Clones(model,minCloneSize);
+	println("clones extracted");
 	
 	// Create map with filenames from the model
 	map[str,tuple[str,loc]] allFiles = ();
@@ -43,6 +45,7 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 		allFiles[fileFromModel.path] = <fileFromModel.file,fileFromModel>;
 	}
 	
+	println("generate figures");
 	// Create Sub Figures with Clone data
 	list[Figure] fileFigures = [];
 	for ( file <- allFiles ) {
@@ -52,10 +55,8 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 			if ( clone[0][2] == allFiles[file][1].path ) { 
 				loc mainLoc = allFiles[file][1];
 				loc counterLoc = toLocation(clone[1][2]);
-				println(counterLoc);
-				println(mainLoc);
 				str counterFileName = counterLoc.file;
-				Figure counterFile = t(counterFileName, "red");
+				Figure counterFile = t(counterFileName, "brown");
 				str counterPart = toString(clone[1][0]) + "-" + toString(clone[1][1]);
 				Figure counterClone = t(counterPart, "green", [counterFile], [md(counterLoc)]);
 				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange", [counterClone], [md(mainLoc)]);
@@ -67,10 +68,11 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 		clonesPerFile = [];
 		i = 0;
 	}
+	println("figures generated");
 	
 	// Create summary Figure, parent of file Figure
 	str numberOfClones = toString(size(type1Clones));
-	Figure cloneSummary = t("Type 1 clones for " + description + " (min. clonesize = " + toString(minCloneSize) + "): " + numberOfClones, "blue", fileFigures);
+	Figure cloneSummary = t("Type 1 clones for " + description + " (min. clonesize = " + toString(minCloneSize) + "): " + numberOfClones, "purple", fileFigures);
 
 	return (cloneSummary);
 }
