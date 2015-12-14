@@ -8,6 +8,8 @@ import lang::java::jdt::m3::Core;
 
 import vis::Figure;
 import vis::Render;
+import vis::KeySym;
+import util::Editors;
 
 import softwareevolution::series2::CommentReplace;
 import softwareevolution::series2::Type1CloneDetection;
@@ -18,9 +20,16 @@ public loc testSmallProject = |project://verysmallproject|;
 public M3 getTestRascal() = createM3FromEclipseProject(testRascal);
 public M3 getSmallProject() = createM3FromEclipseProject(testSmallProject);
 
+/** Function to create a figure (with children) */
 public Figure t(str description,str color) = t(description,color,[]);
 public Figure t(str description,str color, list[Figure] children) = t(description,color,children,[std(size(20)), std(gap(10))]);
 public Figure t(str description,str color, list[Figure] children, list[FProperty] properties) = tree(box(text(description,fontColor("white")),fillColor(color)),children,properties);
+
+/** Property for the mousedown event */
+public FProperty md(loc location) = onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+  edit(location,[info(1,"")]);
+  return true;
+});
 
 /** Show summary information about Type 1 clones */
 public Figure showType1Clones(M3 model, str description, int minCloneSize) {
@@ -42,9 +51,9 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 			if ( clone[0][2] == file ) { 
 				loc counterLoc = toLocation(clone[1][2]);
 				str counterFileName = counterLoc.file;
-				Figure counterFile = t(counterFileName, "pink");
+				Figure counterFile = t(counterFileName, "red");
 				str counterPart = toString(clone[1][0]) + "-" + toString(clone[1][1]);
-				Figure counterClone = t(counterPart, "green", [counterFile]);
+				Figure counterClone = t(counterPart, "green", [counterFile], [md(counterLoc)]);
 				clonesPerFile += t(toString(clone[0][0]) + "-" + toString(clone[0][1]), "orange", [counterClone]);
 				i += 1; 
 			}
@@ -59,6 +68,5 @@ public Figure showType1Clones(M3 model, str description, int minCloneSize) {
 	str numberOfClones = toString(size(type1Clones));
 	Figure cloneSummary = t("Type 1 clones for " + description + " (min. clonesize = " + toString(minCloneSize) + "): " + numberOfClones, "blue", fileFigures);
 
-	//return();
 	return (cloneSummary);
 }
