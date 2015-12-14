@@ -11,6 +11,7 @@ public class HelloWorld {
 	public static void main(String[] args) {
 		// A single line comment
 		System.out.println("Hello World!");
+		Integer a = null;
 		/* A one line comment*/
 		/** Another one line comment*/
 		
