@@ -22,7 +22,7 @@ public Figure convertToTree(map[int,set[set[loc]]] clones) {
       children2 += t("<size(children3)>","orange",children3,[std(gap(20))]);
     }
     f = t("<statementSize>","green",children2);
-    children += box(text("<statementSize>"),fillColor("green"),std(size(40+5*size(clones[statementSize]))),md(f));
+    children += box(text("<statementSize>"),fillColor("green"),std(size(40+1*size(clones[statementSize]))),md(f));
   }
   return hvcat(children,gap(5));
 }
