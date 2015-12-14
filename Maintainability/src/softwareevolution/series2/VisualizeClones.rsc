@@ -12,7 +12,7 @@ public Figure t(str description,str color, list[Figure] children, list[FProperty
 
 public Figure convertToTree(map[int,set[set[loc]]] clones) {
   children = [];
-  for(statementSize <- clones) {
+  for(statementSize <- sort([c | c <- clones])) {
     children2 = [];
     for(cloneClass<-clones[statementSize]) {
       children3 = [];
