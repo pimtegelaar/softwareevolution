@@ -12,21 +12,27 @@ public Figure t(str description,str color, list[Figure] children, list[FProperty
 
 public Figure convertToTree(map[int,set[set[loc]]] clones) {
   children = [];
-  for(statementSize <- sort([c | c <- clones])) {
+  for(statementSize <- reverse(sort([c | c <- clones]))) {
     children2 = [];
     for(cloneClass<-clones[statementSize]) {
       children3 = [];
       for(clone<-cloneClass) {
         children3 += t("<clone.file> <clone.begin> <clone.end>","blue", [],[md(clone)]); 
       }
-      children2 += t("","orange",children3,[std(gap(20))]);
+      children2 += t("<size(children3)>","orange",children3,[std(gap(20))]);
     }
-    children+=t("<statementSize> statements","green", children2);
+    f = t("<statementSize>","green",children2);
+    children += box(text("<statementSize>"),fillColor("green"),std(size(40+5*size(clones[statementSize]))),md(f));
   }
-  return t("Clones","red",children);
+  return hvcat(children,gap(5));
 }
 
+public FProperty md(Figure f) = onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+  render(f);
+  return true;
+});
+
 public FProperty md(loc location) = onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-    edit(location,[info(1,"")]);
+  edit(location,[info(1,"")]);
   return true;
 });
