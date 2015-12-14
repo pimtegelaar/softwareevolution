@@ -15,12 +15,12 @@ import softwareevolution::series2::tests::Assertions;
 
 test bool test_countStatements() {
   result = countStatements(getA());
-  assertEquals(result,24);
+  assertEquals(result,6);
   return true;
 }
 
 test bool test_indexeer() {
-  i = indexeer(getTr(),5);
+  i = indexeer(getTr(),5,false);
   assertEquals(size(i),23);
   
   six = i[6];
