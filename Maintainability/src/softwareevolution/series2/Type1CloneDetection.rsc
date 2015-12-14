@@ -282,21 +282,20 @@ public list[lrel[int,int,str]] getType1Clones(M3 model, int minCloneSize) {
 			for ( possibleCloneLines <- possibleClonesList ) {
 				int amountRefLines = possibleCloneLines[1] - possibleCloneLines[0] + 1;
 				
-				// Section for single line reference cases
-				if ( amountLines == 1 && amountRefLines > 1 && minCloneSize == 1 ) {
-				println(amountRefLines);
-					int orgLineIndexSub = 0;
-					for ( orgSrcLine <- orgSrcLines ) {
-						int orgLineNo = orgIndexToLineNo[orgLineIndexSub];
-						if ( [orgSrcLine] == refSrcLines[possibleCloneLines] ) {
-							clonePairs += [[ <orgLineNo,orgLineNo,file>
-							               , <possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>
-							              ]];
-						}
-						orgLineIndexSub += 1;
-					}
-					orgLineIndexSub = 0;
-				}
+				//// Section for single line reference cases
+				//if ( amountLines == 1 && amountRefLines > 1 && minCloneSize == 1 ) {
+				//	int orgLineIndexSub = 0;
+				//	for ( orgSrcLine <- orgSrcLines ) {
+				//		int orgLineNo = orgIndexToLineNo[orgLineIndexSub];
+				//		if ( [orgSrcLine] == refSrcLines[possibleCloneLines] ) {
+				//			clonePairs += [[ <orgLineNo,orgLineNo,file>
+				//			               , <possibleCloneLines[0],possibleCloneLines[1],possibleCloneLines[2]>
+				//			              ]];
+				//		}
+				//		orgLineIndexSub += 1;
+				//	}
+				//	orgLineIndexSub = 0;
+				//}
 				
 				// Section for multi line reference cases (depends on size parameter)
 				if ( minCloneSize > 1 && amountLines >= minCloneSize && amountRefLines >= minCloneSize ) {
